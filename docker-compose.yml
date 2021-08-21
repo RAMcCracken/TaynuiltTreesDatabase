@@ -22,7 +22,7 @@ services:
     command: bash -c "npm install && npm run start"
 
   mariadb:
-    container_name: trees-container
+    container_name: mariadb-container
     image: mariadb
     volumes: 
       - ./db_store:/var/lib/mysql
@@ -31,3 +31,15 @@ services:
       MARIADB_ROOT_PASSWORD: hawthorn
     ports: 
       - 3306:3306
+
+  nginx:
+    container_name: nginx-container
+    image: nginx
+    volumes:
+      - ./front_end_trees/build:/data/www:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+     - "80:80"
+    environment:
+     - NGINX_HOST=foobar.com
+     - NGINX_PORT=80
