@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+
   back-end:
     container_name: back-end-container
     build: ./back_end_trees/
@@ -9,17 +10,6 @@ services:
     ports: 
       - 21452:21452
     command: bash -c "npm install && nodemon index.js"
-
-  front-end:
-    container_name: front-end-container
-    build: ./front_end_trees/
-    environment:
-      PORT: 21451
-    volumes: 
-      - ./front_end_trees:/app
-    ports: 
-      - 21451:21451
-    command: bash -c "npm install && npm run start"
 
   mariadb:
     container_name: mariadb-container
@@ -41,5 +31,18 @@ services:
     ports:
      - "80:80"
     environment:
-     - NGINX_HOST=foobar.com
+    # - NGINX_HOST=foobar.com
      - NGINX_PORT=80
+
+  # comment out in deployment!
+  front-end-development:
+    container_name: front-end-development-container
+    build: ./front_end_trees/
+    environment:
+      PORT: 21451
+    volumes: 
+      - ./front_end_trees:/app
+    ports: 
+      - 21451:21451
+    command: bash -c "npm install && npm run start"
+
