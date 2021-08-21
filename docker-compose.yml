@@ -1,17 +1,42 @@
 version: "3.8"
 
 services:
-  #  back-end:
-  #    container_name: blog-back-end
-  #    build: ./back-end/
-  #    volumes: 
-  #      - ./back-end:/app
-  #    ports: 
-  #      - 21452:21452
-  #    command: cargo watch -x check -x test -x run 
 
-  front-end:
-    container_name: front-end-container
+  back-end:
+    container_name: back-end-container
+    build: ./back_end_trees/
+    volumes: 
+      - ./back_end_trees:/app
+    ports: 
+      - 21452:21452
+    command: bash -c "npm install && nodemon index.js"
+
+  mariadb:
+    container_name: mariadb-container
+    image: mariadb
+    volumes: 
+      - ./db_store:/var/lib/mysql
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: hawthorn
+    ports: 
+      - 3306:3306
+
+  nginx:
+    container_name: nginx-container
+    image: nginx
+    volumes:
+      - ./front_end_trees/build:/data/www:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+     - "80:80"
+    environment:
+    # - NGINX_HOST=foobar.com
+     - NGINX_PORT=80
+
+  # comment out in deployment!
+  front-end-development:
+    container_name: front-end-development-container
     build: ./front_end_trees/
     environment:
       PORT: 21451
@@ -21,13 +46,3 @@ services:
       - 21451:21451
     command: bash -c "npm install && npm run start"
 
-  mariadb:
-    container_name: trees-container
-    image: mariadb
-    volumes: 
-      - ./db_store:/var/lib/mysql
-    restart: always
-    environment:
-      MARIADB_ROOT_PASSWORD: hawthorn
-    ports: 
-      - 3306:3306
