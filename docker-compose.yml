@@ -1,14 +1,14 @@
 version: "3.8"
 
 services:
-  #  back-end:
-  #    container_name: blog-back-end
-  #    build: ./back-end/
-  #    volumes: 
-  #      - ./back-end:/app
-  #    ports: 
-  #      - 21452:21452
-  #    command: cargo watch -x check -x test -x run 
+  back-end:
+    container_name: back-end-container
+    build: ./back_end_trees/
+    volumes: 
+      - ./back_end_trees:/app
+    ports: 
+      - 21452:21452
+    command: bash -c "npm install && nodemon index.js"
 
   front-end:
     container_name: front-end-container
