@@ -37,6 +37,15 @@ CREATE TABLE `Customer` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `Customer`
+--
+
+LOCK TABLES `Customer` WRITE;
+/*!40000 ALTER TABLE `Customer` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Customer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Customer_Phone`
 --
 
@@ -51,6 +60,15 @@ CREATE TABLE `Customer_Phone` (
   CONSTRAINT `Customer_Phone_FK` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Customer_Phone`
+--
+
+LOCK TABLES `Customer_Phone` WRITE;
+/*!40000 ALTER TABLE `Customer_Phone` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Customer_Phone` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Delivery`
@@ -73,6 +91,15 @@ CREATE TABLE `Delivery` (
   PRIMARY KEY (`delivery_ref`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Delivery`
+--
+
+LOCK TABLES `Delivery` WRITE;
+/*!40000 ALTER TABLE `Delivery` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Delivery` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -185,6 +212,15 @@ CREATE TABLE `Invoice` (
   CONSTRAINT `Invoice_CHECK_vat` CHECK (`vat` <= 100 and `vat` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Invoice`
+--
+
+LOCK TABLES `Invoice` WRITE;
+/*!40000 ALTER TABLE `Invoice` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Invoice` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -423,6 +459,15 @@ CREATE TABLE `Invoice_Products` (
   CONSTRAINT `Invoice_Products_CHECK` CHECK (`quantity` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Invoice_Products`
+--
+
+LOCK TABLES `Invoice_Products` WRITE;
+/*!40000 ALTER TABLE `Invoice_Products` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Invoice_Products` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -649,6 +694,15 @@ CREATE TABLE `Order_Products` (
   CONSTRAINT `Order_Products_CHECK` CHECK (`quantity` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Order_Products`
+--
+
+LOCK TABLES `Order_Products` WRITE;
+/*!40000 ALTER TABLE `Order_Products` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Order_Products` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -706,6 +760,15 @@ CREATE TABLE `Orders` (
   CONSTRAINT `Order_FK_1` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Orders`
+--
+
+LOCK TABLES `Orders` WRITE;
+/*!40000 ALTER TABLE `Orders` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Orders` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -776,6 +839,15 @@ CREATE TABLE `Prices` (
   PRIMARY KEY (`price_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Prices`
+--
+
+LOCK TABLES `Prices` WRITE;
+/*!40000 ALTER TABLE `Prices` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Prices` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -850,6 +922,15 @@ CREATE TABLE `Product` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `Product`
+--
+
+LOCK TABLES `Product` WRITE;
+/*!40000 ALTER TABLE `Product` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Product` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Quote`
 --
 
@@ -862,6 +943,15 @@ CREATE TABLE `Quote` (
   PRIMARY KEY (`quote_ref`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Quote`
+--
+
+LOCK TABLES `Quote` WRITE;
+/*!40000 ALTER TABLE `Quote` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Quote` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Species`
@@ -877,6 +967,15 @@ CREATE TABLE `Species` (
   PRIMARY KEY (`species_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Species`
+--
+
+LOCK TABLES `Species` WRITE;
+/*!40000 ALTER TABLE `Species` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Species` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Supplier`
@@ -898,6 +997,15 @@ CREATE TABLE `Supplier` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `Supplier`
+--
+
+LOCK TABLES `Supplier` WRITE;
+/*!40000 ALTER TABLE `Supplier` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Supplier` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Supplier_Phone`
 --
 
@@ -913,6 +1021,15 @@ CREATE TABLE `Supplier_Phone` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `Supplier_Phone`
+--
+
+LOCK TABLES `Supplier_Phone` WRITE;
+/*!40000 ALTER TABLE `Supplier_Phone` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Supplier_Phone` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `banana`
 --
 
@@ -923,6 +1040,15 @@ CREATE TABLE `banana` (
   `Column1` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `banana`
+--
+
+LOCK TABLES `banana` WRITE;
+/*!40000 ALTER TABLE `banana` DISABLE KEYS */;
+/*!40000 ALTER TABLE `banana` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Dumping routines for database 'taynuilttrees'
@@ -1031,4 +1157,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-21 11:58:47
+-- Dump completed on 2021-08-22  9:49:16
