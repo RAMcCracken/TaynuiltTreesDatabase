@@ -14,6 +14,8 @@ const db_pool = mariadb.createPool({
 // puts the pool into app, so that other routes can use it. ie customer.js
 app.set('db_pool', db_pool)
 
+app.use(express.json())
+
 // with this, all queries that begin with /api/customer/foo
 // to go the customer.js file, where it will see the query as /foo
 const customer_routes = require('./routes/customer')
