@@ -9,6 +9,7 @@ router.use(function (req, res, next) {
 // Returns all customers with their phone numbers comma seperated
 router.get('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
+  let e_msg = "Err: GET /api/customer -";
   db_pool.getConnection()
     .then(conn => {
       conn.query(`
@@ -28,14 +29,14 @@ router.get('/', function (req, res) {
           conn.end();
         })
         .catch(err => {
-          console.log(err)
-          res.send(err)
+          console.log(`${e_msg} getting customers\n${err}`)
+          res.status(500).send(`${e_msg} getting customers\n${err}`)
         })
       })
-    .catch(err => {
-      console.log(err)
-      res.send(err)
-    })
+      .catch(err => {
+            console.log(`${e_msg} getting connection from pool\n${err}`)
+            res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+      })
 })
 
 // Add a new customer, with phone numbers, using a transaction in case either insertion fails
