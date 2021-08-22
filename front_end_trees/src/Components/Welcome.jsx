@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Card } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
 
 class Welcome extends Component {
     constructor(props) {
@@ -14,7 +14,12 @@ class Welcome extends Component {
         return (
             <Card className='m-4'>
                 <Card.Title className='mt-2'>Taynuilt Trees Database Management System</Card.Title>
-                <Card.Body>Please select a table below to browse data</Card.Body>
+                <Card.Body>
+                    <Card.Text>Please select a table below to browse data</Card.Text>
+                    <Button className="m-3" href="/orders">Orders</Button>
+                    <Button className="m-3" href="/customers">Customers</Button>
+                </Card.Body>
+
             </Card>
         )
     }

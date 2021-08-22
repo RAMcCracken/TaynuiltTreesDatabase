@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import Button from 'react-bootstrap/Button'
 import Table from 'react-bootstrap/Table'
 import Card from 'react-bootstrap/Card'
@@ -8,6 +9,8 @@ import { Col, Row } from 'react-bootstrap'
 
 
 function CustomerCreator() {
+
+    let history = useHistory();
 
     const [phoneFields, setPhoneFields] = useState([{
         id: 1,
@@ -74,6 +77,15 @@ function CustomerCreator() {
         console.log(requestOptions);
         requestOptions.body = JSON.stringify(requestOptions.body);
         fetch('/api/customer', requestOptions)
+            .then(response => {
+                response.json();
+                if (response.ok) {
+                    e.target.reset();
+                    history.push("/customers");
+                }
+            })
+
+
     }
 
     return (
