@@ -18,6 +18,7 @@ function CustomerCreator() {
     const [firstname, setFirstName] = useState("");
     const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
+    const [company, setCompany] = useState("");
     const [address1, setAddress1] = useState("");
     const [address2, setAddress2] = useState("");
     const [address3, setAddress3] = useState("");
@@ -48,7 +49,7 @@ function CustomerCreator() {
 
         phoneFields.forEach(element => {
             console.log(element.number)
-            const number = { customer_ref: custref, number: element.number }
+            const number = [custref, element.number]
             phoneNums = [...phoneNums, number]
         });
 
@@ -62,6 +63,7 @@ function CustomerCreator() {
                 firstname: firstname,
                 surname: surname,
                 email: email,
+                company: company,
                 address_number: address1,
                 address_street: address2,
                 address_town: address3,
@@ -70,8 +72,8 @@ function CustomerCreator() {
             }
         };
         console.log(requestOptions);
-        // requestOptions.body = JSON.stringify(requestOptions.body);
-        // fetch('/api/customer', requestOptions)
+        requestOptions.body = JSON.stringify(requestOptions.body);
+        fetch('/api/customer', requestOptions)
     }
 
     return (
@@ -117,6 +119,15 @@ function CustomerCreator() {
                             placeholder="Customer Email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="company">
+                        <Form.Label className="d-flex align-self-left">Company</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Customer Company"
+                            value={company}
+                            onChange={e => setCompany(e.target.value)}
                         />
                     </Form.Group>
                     <Form.Text>Address</Form.Text>
