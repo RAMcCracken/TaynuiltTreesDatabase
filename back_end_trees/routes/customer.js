@@ -25,14 +25,17 @@ router.get('/', function (req, res) {
         GROUP BY c.customer_ref
         `)
         .then(rows => {
+          conn.end();
           res.send(rows);
         })
         .catch(err => {
+          conn.end();
           console.log(`${e_msg} getting customers\n${err}`)
           res.status(500).send(`${e_msg} getting customers\n${err}`)
         })
       })
       .catch(err => {
+            conn.end();
             console.log(`${e_msg} getting connection from pool\n${err}`)
             res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
       })
@@ -59,23 +62,27 @@ router.post('/', async function (req, res) {
               `, c.phone_numbers)
                 .then(() => {
                   conn.commit();
+                  conn.end();
                   res.json(c);
                 })
                 .catch((err) => {
                   console.log(`${e_msg} adding customer, phone numbers failed\n${err}`);
                   conn.rollback();
+                  conn.end();
                   res.status(500).send(`${e_msg} adding customer, phone numbers failed\n${err}`);
                 })
             })
             .catch((err) => {
               console.log(`${e_msg} adding customer\n${err}`);
               conn.rollback();
+              conn.end();
               res.status(500).send(`${e_msg} adding customer\n${err}`);
             })
       })
       .catch((err) => {
         console.log(`${e_msg} beginning transaction\n${err}`);
         conn.rollback();
+        conn.end();
         res.status(500).send(`${e_msg} beginning transaction\n${err}`);
       })
   })
@@ -110,38 +117,45 @@ router.put('/', function (req, res) {
                         console.log()
                         conn.commit()
                           .then(() => {
+                            conn.end();
                             res.json(c);
                           })
                           .catch((err) => {
-                            res.status(400).send(`${e_msg} failed to commit transaction\n${err}`);
+                            conn.end();
+                            res.status(500).send(`${e_msg} failed to commit transaction\n${err}`);
                           })
                       })
                       .catch((err) => {
                         console.log(`${e_msg} inserting new phone numbers\n${err}`);
                         conn.rollback();
-                        res.status(400).send(`${e_msg} inserting new phone numbers\n${err}`);
+                        conn.end();
+                        res.status(500).send(`${e_msg} inserting new phone numbers\n${err}`);
                       })
                   })
                   .catch((err) => {
                     console.log(`${e_msg} deleting old phone numbers\n${err}`);
                     conn.rollback();
-                    res.status(400).send(`${e_msg} deleting old phone numbers\n${err}`);
+                    conn.end();
+                    res.status(500).send(`${e_msg} deleting old phone numbers\n${err}`);
                   })
               } else {
                   console.log(`${e_msg} updating customer, customer doesn't exist`);
                   conn.rollback();
-                  res.status(400).send(`${e_msg} updating customer, customer doesn't exist`);
+                  conn.end();
+                  res.status(404).send(`${e_msg} updating customer, customer doesn't exist`);
               }
             })
             .catch((err) => {
                 console.log(`${e_msg} updating customer\n${err}`);
                 conn.rollback();
-                res.status(400).send(`${e_msg} updating customer\n${err}`);
+                conn.end();
+                res.status(500).send(`${e_msg} updating customer\n${err}`);
             })
         })
         .catch((err) => {
+          conn.end();
           console.log(`${e_msg} creating transaction\n${err}`);
-          res.status(400).send(`${e_msg} creating transaction\n${err}`);
+          res.status(500).send(`${e_msg} creating transaction\n${err}`);
         })
     })
     .catch((err) => {
@@ -152,6 +166,30 @@ router.put('/', function (req, res) {
 
 // remove a customer from the database (cascade delete of orders etc?)
 router.delete('/', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let c = req.body;
+  let e_msg = "Err: DELETE /api/customer -";
+
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        DELETE FROM Customer WHERE customer_ref = ?
+        `, [c.customer_ref])
+        .then(() => {
+          conn.end();
+          res.status(200).send("")
+        })
+        .catch((err) => {
+          conn.end();
+          console.log(`${e_msg} deleting customer\n${err}`);
+          res.status(500).send(`${e_msg} deleting customer\n${err}`);
+        })
+    })
+    .catch((err) => {
+      conn.end();
+      console.log(`${e_msg} getting connection from pool\n${err}`);
+      res.status(500).send(`${e_msg} getting connection from pool\n${err}`);
+    })
 })
 
 // export to main js file
