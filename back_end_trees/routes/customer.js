@@ -26,7 +26,6 @@ router.get('/', function (req, res) {
         `)
         .then(rows => {
           res.send(rows);
-          conn.end();
         })
         .catch(err => {
           console.log(`${e_msg} getting customers\n${err}`)
