@@ -10,7 +10,6 @@ router.use(function (req, res, next) {
 
 // Returns all customers with their phone numbers comma seperated
 router.get('/', function (req, res) {
-  let conn
   let db_pool = req.app.get('db_pool');
   db_pool.getConnection()
     .then(conn => {
@@ -53,25 +52,48 @@ router.get('/', function (req, res) {
 //                `), c.phone_numbers, (err) => {
 //                  if (err) {
 router.post('/', async function (req, res) {
-  let conn
   let db_pool = req.app.get('db_pool');
-  try {
-    conn = await db_pool.getConnection()
-
-    conn.beginTransaction(async err => {
-      if (err) {console.log("Err making trans")}
-      else {
-        rows = await conn.query("SELECT * FROM Customer")
-        console.log(rows)
-      }
-    })
-
-  } catch (err) {
-    res.status(400)
-    res.send(err)
-  } finally {
-    if (conn) conn.end();
-  }
+  let c = req.body
+  db_pool.getConnection()
+    .then(conn => {
+      conn.beginTransaction()
+        .then(() => {
+          conn.query(`
+            INSERT INTO Customer (customer_ref, firstname, surname,
+            email, company, address_number, address_street, address_town,
+            address_postcode) 
+            VALUES(?,?,?,?,?,?,?,?,?)
+          `, [c.customer_ref,c.firstname,c.surname,c.email,c.company,c.address_number,c.address_street,c.address_town,c.address_postcode])
+            .then(() => {
+              console.log("Customer is chill")
+              conn.batch(`
+              INSERT INTO Customer_Phone (customer_ref, phone_number) VALUES (?, ?)
+              `, c.phone_numbers)
+                .then(() => {
+                  conn.commit();
+                  res.json(c);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  conn.rollback();
+                  res.status(400);
+                  res.send(err);
+                })
+            })
+            .catch((err) => {
+              console.log(err);
+              conn.rollback();
+              res.status(400);
+              res.send(err);
+            })
+      })
+      .catch((err) => {
+        console.log(err);
+        conn.rollback();
+        res.status(400);
+        res.send(err);
+      })
+  })
 })
 
 router.put('/', function (req, res) {
