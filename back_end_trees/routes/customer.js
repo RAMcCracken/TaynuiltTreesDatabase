@@ -42,6 +42,7 @@ router.get('/', function (req, res) {
 // Add a new customer, with phone numbers, using a transaction in case either insertion fails
 router.post('/', async function (req, res) {
   let db_pool = req.app.get('db_pool');
+  let e_msg = "Err: POST /api/customer -";
   let c = req.body
   db_pool.getConnection()
     .then(conn => {
@@ -62,25 +63,26 @@ router.post('/', async function (req, res) {
                   res.json(c);
                 })
                 .catch((err) => {
-                  console.log(err);
+                  console.log(`${e_msg} adding customer, phone numbers failed\n${err}`);
                   conn.rollback();
-                  res.status(400);
-                  res.send(err);
+                  res.status(500).send(`${e_msg} adding customer, phone numbers failed\n${err}`);
                 })
             })
             .catch((err) => {
-              console.log(err);
+              console.log(`${e_msg} adding customer\n${err}`);
               conn.rollback();
-              res.status(400);
-              res.send(err);
+              res.status(500).send(`${e_msg} adding customer\n${err}`);
             })
       })
       .catch((err) => {
-        console.log(err);
+        console.log(`${e_msg} beginning transaction\n${err}`);
         conn.rollback();
-        res.status(400);
-        res.send(err);
+        res.status(500).send(`${e_msg} beginning transaction\n${err}`);
       })
+  })
+  .catch((err) => {
+    console.log(`${e_msg} getting connection from pool\n${err}`);
+    res.status(500).send(`${e_msg} getting connection from pool\n${err}`);
   })
 })
 
@@ -142,6 +144,10 @@ router.put('/', function (req, res) {
           console.log(`${e_msg} creating transaction\n${err}`);
           res.status(400).send(`${e_msg} creating transaction\n${err}`);
         })
+    })
+    .catch((err) => {
+      console.log(`${e_msg} getting connection from pool\n${err}`);
+      res.status(500).send(`${e_msg} getting connection from pool\n${err}`);
     })
 })
 
