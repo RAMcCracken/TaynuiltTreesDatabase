@@ -7,6 +7,11 @@ services:
     build: ./back_end_trees/
     volumes: 
       - ./back_end_trees:/app
+    environment:
+      DB_PWD: ${DB_PWD}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_NAME: ${DB_NAME}
     ports: 
       - 21452:21452
     command: bash -c "npm install && nodemon index.js"
@@ -18,7 +23,7 @@ services:
       - ./db_store:/var/lib/mysql
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: hawthorn
+      MARIADB_ROOT_PASSWORD: ${DB_PWD}
     ports: 
       - 3306:3306
 
