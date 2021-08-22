@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// TODO: GET POST PUT DELETE Queries on Customer
-
 // Middleware if we had any.
 router.use(function (req, res, next) {
   next()
@@ -40,6 +38,7 @@ router.get('/', function (req, res) {
     })
 })
 
+// Add a new customer, with phone numbers, using a transaction in case either insertion fails
 router.post('/', async function (req, res) {
   let db_pool = req.app.get('db_pool');
   let c = req.body
@@ -54,7 +53,6 @@ router.post('/', async function (req, res) {
             VALUES(?,?,?,?,?,?,?,?,?)
           `, [c.customer_ref,c.firstname,c.surname,c.email,c.company,c.address_number,c.address_street,c.address_town,c.address_postcode])
             .then(() => {
-              console.log("Customer is chill")
               conn.batch(`
               INSERT INTO Customer_Phone (customer_ref, phone_number) VALUES (?, ?)
               `, c.phone_numbers)
@@ -86,20 +84,20 @@ router.post('/', async function (req, res) {
 })
 
 // update every field in the Customers table to the given json
+// also update phone numbers
 router.put('/', function (req, res) {
   res.send('customer put')
 })
 
-router.delete("/phone_number", function (req, res) {
-
-})
-router.post("/phone_number", function (req, res) {
-
-})
-
 // remove a customer from the database (cascade delete of orders etc?)
 router.delete('/', function (req, res) {
-  res.send('customer delete')
+  let db_pool = req.app.get('db_pool');
+  let c = req.body
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(``)
+    })
 })
 
+// export to main js file
 module.exports = router
