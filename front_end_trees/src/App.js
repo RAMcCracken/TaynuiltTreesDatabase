@@ -5,6 +5,7 @@ import OrdersViewer from './Components/OrdersViewer';
 import Welcome from './Components/Welcome';
 import Navigation from './Components/Navigation';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import CustomerCreator from './Components/CustomerCreator';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route exact path="/" component={Welcome} />
           <Route path="/Customers" component={CustomersViewer} />
           <Route path="/Orders" component={OrdersViewer} />
+          <Route path="/New-Customer" component={CustomerCreator} />
         </Switch>
       </Router>
     </div>
