@@ -4,6 +4,9 @@ import Table from 'react-bootstrap/Table'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import { Modal } from 'react-bootstrap'
+// import { withRouter } from "react-router";
+import { Link } from "react-router-dom"
+
 
 class CustomersViewer extends Component {
     constructor(props) {
@@ -43,10 +46,34 @@ class CustomersViewer extends Component {
 
     handleEdit = e => {
         console.log(this.state.selectedCustomerRef)
+        const customer_row = this.state.data.filter(row => row.customer_ref === this.state.selectedCustomerRef)[0];
+        console.log(customer_row);
+        // this.props.history.push("/edit-customer")
+        // this.props.history.push(
+        //     "/edit-customer",
+        //     { state: { data: customer_row } }
+        // )
     }
 
     handleDelete = e => {
-        console.log(this.state.selectedCustomerRef)
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: {
+                customer_ref: this.state.selectedCustomerRef,
+            }
+        };
+
+        requestOptions.body = JSON.stringify(requestOptions.body);
+        fetch('/api/customer', requestOptions)
+            .then(response => {
+                if (response.ok) {
+                    const result = this.state.data.filter(row => row.customer_ref !== this.state.selectedCustomerRef);
+                    this.setState({ data: result, selectedCustomerRef: "" })
+                }
+            })
         this.handleCloseDelete();
     }
 
@@ -67,17 +94,26 @@ class CustomersViewer extends Component {
 
     render() {
         return (
-            <Card className='m-4'>
+            <Card className='m-4' xs={12}>
                 <Card.Title className='mt-4'>Customers</Card.Title>
                 {this.state.error ? <h4>{this.state.error}</h4> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
                     <Card.Body>
-                        <Button
-                            disabled={this.state.selectedCustomerRef === ""}
-                            className='m-2'
-                            onClick={this.handleEdit}>
-                            Edit
+                        <Link to={
+                            {
+                                pathname: "/edit-customer",
+                                state: {
+                                    data: this.state.data.filter(row => row.customer_ref === this.state.selectedCustomerRef)[0]
+                                }
+                            }
+                        }>
+                            <Button
+                                disabled={this.state.selectedCustomerRef === ""}
+                                className='m-2'
+                                onClick={this.handleEdit}>
+                                Edit
                         </Button>
+                        </Link>
                         <Button
                             disabled={this.state.selectedCustomerRef === ""}
                             variant='danger'
@@ -115,10 +151,13 @@ class CustomersViewer extends Component {
                                                     />
                                                 </td>
                                                 <td>{customer.customer_ref}</td>
-                                                <td>{customer.full_name}</td>
+                                                <td>{customer.firstname + " " + customer.surname}</td>
                                                 <td>{customer.email}</td>
                                                 <td>{customer.company}</td>
-                                                <td>{customer.full_address}</td>
+                                                <td>
+                                                    {customer.address_number + " ," + customer.address_street + " ,"
+                                                        + customer.address_town + " ," + customer.address_postcode}
+                                                </td>
                                                 <td>{customer.phone_numbers}</td>
                                             </tr>
                                         );

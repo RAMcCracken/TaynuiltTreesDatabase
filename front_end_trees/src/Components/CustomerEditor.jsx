@@ -1,15 +1,15 @@
 import React, { Component } from 'react'
 import Card from 'react-bootstrap/Card'
-
 import CustomerForm from './CustomerForm'
 
 
-class CustomerCreator extends Component {
+class CustomerEditor extends Component {
     constructor(props) {
         super(props)
         this.state = {
             phoneFields: [{ id: 1, number: "" }],
-            custref: "",
+            custref: this.props.location && this.props.location.state ?
+                this.props.location.state.data.customer_ref : "",
             firstname: "",
             surname: "",
             email: "",
@@ -48,7 +48,7 @@ class CustomerCreator extends Component {
         });
 
         const requestOptions = {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -104,4 +104,4 @@ class CustomerCreator extends Component {
 
     }
 
-} export default CustomerCreator
+} export default CustomerEditor
