@@ -76,7 +76,7 @@ class CustomerEditor extends Component {
             }
         };
         requestOptions.body = JSON.stringify(requestOptions.body);
-        fetch('/api/customer', requestOptions)
+        fetch('/api/customer/' + this.state.custref, requestOptions)
             .then(response => {
                 response.json();
                 if (response.ok) {
