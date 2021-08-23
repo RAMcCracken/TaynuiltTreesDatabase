@@ -144,8 +144,6 @@ router.put('/:old_order_no', function (req, res) {
   let o = req.body;
   let e_msg = "Err: PUT /api/order -";
   db_pool.getConnection().then(conn => {
-      //UPDATE Orders SET order_no = ?, order_date = ?, credit_period = ?, picked = ?, location = ?, stock_reserve = ?, Customer_PO = ?, quote_ref = ?, customer_ref = ?
-      //WHERE order_no = ?
     conn.query(`
       UPDATE taynuilttrees.Orders o
       SET o.picked=?,o.credit_period=?,o.Customer_PO=?,o.order_no=?,o.customer_ref=?,o.order_date=?,o.location=?,o.quote_ref=?,o.stock_reserve=?
@@ -202,6 +200,49 @@ router.delete('/:order_no', function (req, res) {
     console.log(`${e_msg} getting connection from pool\n${err}`)
     res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
   });
+})
+
+// Add / Edit an orders order products via transaction deleting
+// them all, then adding in the ones given.
+// expects => [[order_no,product_code,bags,quantity]]
+router.put('/:order_no/product', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: PUT /api/order/${req.params.order_no} -`;
+
+  db_pool.getConnection().then(conn => {
+    conn.beginTransaction().then(() => {
+      conn.query(`
+        DELETE FROM Order_Products WHERE order_no = ?
+        `, [req.params.order_no]).then(() => {
+          conn.batch(`
+           INSERT INTO Order_Products (order_no, product_code, bags, quantity) VALUES (?,?,?,?)  
+            `, req.body.order_prod).then(rows => {
+              conn.commit();
+              conn.end();
+              res.send(`Added ${rows.affectedRows} products to database`);
+            }).catch(err => {
+              conn.rollback();
+              conn.end();
+              console.log(`${e_msg}  adding order productsl\n${err}`)
+              res.status(500).send(`${e_msg}  adding order productsl\n${err}`)
+            })
+        }).catch(err => {
+          conn.rollback();
+          conn.end();
+          console.log(`${e_msg} deleting existing order productsl\n${err}`)
+          res.status(500).send(`${e_msg} deleting existing order productsl\n${err}`)
+        })
+    }).catch(err => {
+      conn.end();
+      console.log(`${e_msg} starting transactionl\n${err}`)
+      res.status(500).send(`${e_msg} starting transactionl\n${err}`)
+    })
+  }).catch(err => {
+    conn.end();
+    console.log(`${e_msg} getting connection from pool\n${err}`)
+    res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+  })
+
 })
 
 // export to main js file
