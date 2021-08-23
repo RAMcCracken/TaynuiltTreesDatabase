@@ -42,6 +42,7 @@ CREATE TABLE `Customer` (
 
 LOCK TABLES `Customer` WRITE;
 /*!40000 ALTER TABLE `Customer` DISABLE KEYS */;
+INSERT INTO `Customer` VALUES ('a4','dave','caldwell','asd@asd.com','main bar','123','banana','town','ml39te'),('a5','dave','caldwell','asd@asd.com','main bar','123','banana','town','ml39te'),('aaaa','aaa','aaa','aa@aa.com','aa','aa','aaa','aa','aa'),('aaaaa','aaa','aaa','aa@aa.com','aa','aa','aaa','aa','aa'),('affff5','dave','caldwell','asd@asd.com','main bar','123','banana','town','ml39te'),('b1','Darren','Fakewelll','123@123.com','dazzatrees','24','banana rd','fruittown','ky168m'),('c1','daz','cald','a@a','com','1','2','3','4');
 /*!40000 ALTER TABLE `Customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,6 +68,7 @@ CREATE TABLE `Customer_Phone` (
 
 LOCK TABLES `Customer_Phone` WRITE;
 /*!40000 ALTER TABLE `Customer_Phone` DISABLE KEYS */;
+INSERT INTO `Customer_Phone` VALUES ('-3333','aaaaa'),('0134534','a4'),('0134534','a5'),('0134534','affff5'),('0756565','a4'),('0756565','a5'),('0756565','affff5'),('aaa','aaaa');
 /*!40000 ALTER TABLE `Customer_Phone` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -754,6 +756,7 @@ CREATE TABLE `Orders` (
   `quote_ref` varchar(100) DEFAULT NULL,
   `customer_ref` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`order_no`),
+  UNIQUE KEY `Orders_UN` (`quote_ref`),
   KEY `Order_FK` (`quote_ref`),
   KEY `Order_FK_1` (`customer_ref`),
   CONSTRAINT `Order_FK` FOREIGN KEY (`quote_ref`) REFERENCES `Quote` (`quote_ref`) ON UPDATE CASCADE,
@@ -767,6 +770,7 @@ CREATE TABLE `Orders` (
 
 LOCK TABLES `Orders` WRITE;
 /*!40000 ALTER TABLE `Orders` DISABLE KEYS */;
+INSERT INTO `Orders` VALUES ('o1','2000-12-07',123,123,'123',123,'123','q1','a4'),('o2','2000-12-07',123,123,'123',123,'123','q2','a4');
 /*!40000 ALTER TABLE `Orders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -950,6 +954,7 @@ CREATE TABLE `Quote` (
 
 LOCK TABLES `Quote` WRITE;
 /*!40000 ALTER TABLE `Quote` DISABLE KEYS */;
+INSERT INTO `Quote` VALUES ('q1',1),('q2',1);
 /*!40000 ALTER TABLE `Quote` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1157,4 +1162,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-22  9:49:16
+-- Dump completed on 2021-08-23  8:02:19
