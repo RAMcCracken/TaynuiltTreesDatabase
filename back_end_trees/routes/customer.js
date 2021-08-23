@@ -89,7 +89,7 @@ router.post('/', async function (req, res) {
 
 // update every field in the Customers table to the given json
 // also update phone numbers
-router.put('/', function (req, res) {
+router.put('/:old_customer_ref', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let c = req.body;
   let e_msg = "Err: PUT /api/customer -";
@@ -98,9 +98,9 @@ router.put('/', function (req, res) {
       conn.beginTransaction()
         .then(() => {
           conn.query(`
-            UPDATE Customer SET firstname = ?, surname = ?, email = ?, company = ?, address_number = ?, address_street = ?, address_town = ?, address_postcode = ?
+            UPDATE Customer SET customer_ref = ?, firstname = ?, surname = ?, email = ?, company = ?, address_number = ?, address_street = ?, address_town = ?, address_postcode = ?
             WHERE customer_ref = ?
-          `, [c.firstname,c.surname,c.email,c.company,c.address_number,c.address_street,c.address_town,c.address_postcode,c.customer_ref])
+          `, [c.customer_ref, c.firstname,c.surname,c.email,c.company,c.address_number,c.address_street,c.address_town,c.address_postcode,req.params.old_customer_ref])
             .then((rows) => {
               if (rows.affectedRows > 0) {
                 conn.query(`DELETE FROM Customer_Phone WHERE customer_ref = ?`, [c.customer_ref])
