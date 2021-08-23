@@ -122,7 +122,7 @@ router.post('/', function (req, res) {
   let e_msg = "Err: POST /api/order -";
   db_pool.getConnection().then(conn => {
     conn.query(`
-      INSERT INTO Orders (order_no, order_date, credit_period, picked, location, stock_reserve, Customer_PO, quote_ref, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)`, [o.order_no,o.order_date,o.credit_period,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref]).then(() => {
+      INSERT INTO Orders (order_no, order_date, credit_period, picked, location, stock_reserve, Customer_PO, quote_ref, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)`, [o.order_no,o.order_date,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref]).then(() => {
         conn.close();
         res.send(o);
       }).catch(err => {
@@ -139,19 +139,27 @@ router.post('/', function (req, res) {
 
 // edit order?
 router.put('/:old_order_no', function (req, res) {
+  console.log(req.params.old_order_no)
   let db_pool = req.app.get('db_pool');
   let o = req.body;
   let e_msg = "Err: PUT /api/order -";
   db_pool.getConnection().then(conn => {
+      //UPDATE Orders SET order_no = ?, order_date = ?, credit_period = ?, picked = ?, location = ?, stock_reserve = ?, Customer_PO = ?, quote_ref = ?, customer_ref = ?
+      //WHERE order_no = ?
     conn.query(`
-      UPDATE Orders SET order_no=?, order_date=?, credit_period=?, picked=?, location=?, stock_reserve=?, Customer_PO=?, quote_ref=?, customer_ref=? WHERE order_no = ?
-      `, [o.order_no,o.order_date,o.credit_period,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref,req.params.old_order_no]).then(rows => {
+      UPDATE taynuilttrees.Orders o
+      SET o.picked=?,o.credit_period=?,o.Customer_PO=?,o.order_no=?,o.customer_ref=?,o.order_date=?,o.location=?,o.quote_ref=?,o.stock_reserve=?
+      WHERE o.order_no=?
+      LIMIT 1
+
+      `, //[o.order_no,o.order_date,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref,req.params.old_order_no]).then(rows => {
+      [o.picked,o.credit_period,o.Customer_PO,o.order_no,o.customer_ref,o.order_date,o.location,o.quote_ref,o.stock_reserve,req.params.old_order_no]).then(rows => {
         if (rows.affectedRows !== 1) {
           conn.end();
           console.log(rows)
-          console.log(`${e_msg} editing order, doesn't exist`)
+          console.log(`${e_msg} editing order ${req.params.old_order_no}, doesn't exist`)
           console.log(rows.affectedRows)
-          res.status(404).send(`${e_msg} editing order, doesn't exist`)
+          res.status(404).send(`${e_msg} editing order ${req.params.old_order_no}, doesn't exist`)
         } else {
           conn.close();
           res.send(o);
