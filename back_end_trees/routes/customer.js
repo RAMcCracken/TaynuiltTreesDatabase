@@ -160,20 +160,19 @@ router.put('/', function (req, res) {
 })
 
 // remove a customer from the database (cascade delete of orders etc?)
-router.delete('/', function (req, res) {
+router.delete('/:customer_ref', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let c = req.body;
   let e_msg = "Err: DELETE /api/customer -";
 
   db_pool.getConnection()
     .then(conn => {
       conn.query(`
         DELETE FROM Customer WHERE customer_ref = ?
-        `, [c.customer_ref])
+        `, [req.params.customer_ref])
         .then((rows) => {
           conn.end();
           if (rows.affectedRows < 1) {
-            res.status(404).send(`${e_msg} customer ${c.customer_ref} does not exist`)
+            res.status(404).send(`${e_msg} customer ${req.params.customer_ref} does not exist`)
           } else {
             res.status(200).send("")
           }
