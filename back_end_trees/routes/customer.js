@@ -13,12 +13,7 @@ router.get('/', function (req, res) {
   db_pool.getConnection()
     .then(conn => {
       conn.query(`
-        SELECT 
-          CONCAT_WS(' ', c.firstname, c.surname) AS full_name,
-          c.customer_ref, c.email, c.company,
-          CONCAT_WS(', ', c.address_number, c.address_street,
-            c.address_town, c.address_postcode) AS full_address,
-          GROUP_CONCAT(cp.phone_number) AS phone_numbers 
+        SELECT c.*, GROUP_CONCAT(cp.phone_number) AS phone_numbers 
         FROM Customer c
         LEFT JOIN Customer_Phone cp ON
           c.customer_ref = cp.customer_ref
