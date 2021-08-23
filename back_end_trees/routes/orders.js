@@ -137,7 +137,6 @@ router.post('/', function (req, res) {
   });
 })
 
-
 // edit order?
 router.put('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
@@ -162,6 +161,32 @@ router.put('/', function (req, res) {
 })
 
 // delete order
+router.delete('/:order_no', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = "Err: DELETE /api/order -";
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      DELETE FROM Orders WHERE order_no = ?
+      `, [req.params.order_n]).then((rows) => {
+        if (rows.affectedRows !== 1) {
+          conn.end();
+          console.log(`${e_msg} deleting order, doesn't exist`)
+          res.status(500).send(`${e_msg} deleting order, doesn't exist`)
+        } else {
+          conn.close();
+          res.send("");
+        }
+      }).catch(err => {
+        conn.end();
+        console.log(`${e_msg} editing order\n${err}`)
+        res.status(500).send(`${e_msg} editing order\n${err}`)
+      })
+  }).catch(err => {
+    conn.end();
+    console.log(`${e_msg} getting connection from pool\n${err}`)
+    res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+  });
+})
 
 // export to main js file
 module.exports = router
