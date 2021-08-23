@@ -6,19 +6,30 @@ import CustomerForm from './CustomerForm'
 class CustomerEditor extends Component {
     constructor(props) {
         super(props)
+        const data = this.props.location && this.props.location.state ?
+            this.props.location.state.data : null
+        const phones = data.phone_numbers.split(",");
+        const phone_ids = phones.map((phone, i) => {
+            const id = i + 1
+            return { id, number: phone }
+        })
         this.state = {
-            phoneFields: [{ id: 1, number: "" }],
-            custref: this.props.location && this.props.location.state ?
-                this.props.location.state.data.customer_ref : "",
-            firstname: "",
-            surname: "",
-            email: "",
-            company: "",
-            address1: "",
-            address2: "",
-            address3: "",
-            address4: ""
+            phoneFields: data ? phone_ids : [{ id: 1, number: "" }],
+            custref: data ? data.customer_ref : "",
+            firstname: data ? data.firstname : "",
+            surname: data ? data.surname : "",
+            email: data ? data.email : "",
+            company: data ? data.company : "",
+            address1: data ? data.address_number : "",
+            address2: data ? data.address_street : "",
+            address3: data ? data.address_town : "",
+            address4: data ? data.address_postcode : "",
+            loading: true
         }
+    }
+
+    componentDidMount() {
+        this.setState({ loading: false })
     }
 
     handleChangePhone = (i, e) => {
@@ -42,7 +53,6 @@ class CustomerEditor extends Component {
         let phoneNums = []
 
         this.state.phoneFields.forEach(element => {
-            console.log(element.number)
             const number = [this.state.custref, element.number]
             phoneNums = [...phoneNums, number]
         });
@@ -78,27 +88,30 @@ class CustomerEditor extends Component {
 
     }
     render() {
-        const { custref, firstname, surname, email, company, address1, address2, address3, address4, phoneFields } = this.state
+        const { custref, firstname, surname, email, company, address1, address2, address3, address4, loading } = this.state
         return (
             <Card className='m-4' >
-                <Card.Title className='mt-4'>Add New Customer</Card.Title>
-                <Card.Body className="d-flex flex-row justify-content-center">
-                    <CustomerForm
-                        custref={custref}
-                        firstname={firstname}
-                        surname={surname}
-                        email={email}
-                        company={company}
-                        address1={address1}
-                        address2={address2}
-                        address3={address3}
-                        address4={address4}
-                        phoneFields={phoneFields}
-                        handleChange={this.handleChange.bind(this)}
-                        handleSubmit={this.handleSubmit.bind(this)}
-                        handleChangePhone={this.handleChangePhone.bind(this)}
-                    ></CustomerForm>
-                </Card.Body>
+
+                <Card.Title className='mt-4'>Edit Customer</Card.Title>
+                {loading ? <h4>Loading, please wait</h4> :
+                    <Card.Body className="d-flex flex-row justify-content-center">
+                        <CustomerForm
+                            custref={custref}
+                            firstname={firstname}
+                            surname={surname}
+                            email={email}
+                            company={company}
+                            address1={address1}
+                            address2={address2}
+                            address3={address3}
+                            address4={address4}
+                            phoneFields={this.state.phoneFields}
+                            handleChange={this.handleChange.bind(this)}
+                            handleSubmit={this.handleSubmit.bind(this)}
+                            handleChangePhone={this.handleChangePhone.bind(this)}
+                        ></CustomerForm>
+                    </Card.Body>
+                }
             </Card >
         )
 

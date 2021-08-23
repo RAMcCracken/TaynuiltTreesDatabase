@@ -4,7 +4,7 @@ import Table from 'react-bootstrap/Table'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import { Modal } from 'react-bootstrap'
-// import { withRouter } from "react-router";
+import { withRouter } from "react-router";
 import { Link } from "react-router-dom"
 
 
@@ -185,4 +185,4 @@ class CustomersViewer extends Component {
     }
 }
 
-export default CustomersViewer
+export default withRouter(CustomersViewer)
