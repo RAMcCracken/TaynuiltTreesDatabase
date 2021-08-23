@@ -175,9 +175,13 @@ router.delete('/', function (req, res) {
       conn.query(`
         DELETE FROM Customer WHERE customer_ref = ?
         `, [c.customer_ref])
-        .then(() => {
+        .then((rows) => {
           conn.end();
-          res.status(200).send("")
+          if (rows.affectedRows < 1) {
+            res.status(404).send(`${e_msg} customer ${c.customer_ref} does not exist`)
+          } else {
+            res.status(200).send("")
+          }
         })
         .catch((err) => {
           conn.end();
