@@ -9,12 +9,12 @@ function Navigation() {
     return (
         <Navbar bg="light" expand="lg">
             <Container className="d-flex">
-                <Navbar.Brand href="/" className="mb-4">
+                <Navbar.Brand href="/" className="mb-2">
                     <img
                         alt=""
                         src={logo}
-                        width="200"
-                        height="100"
+                        width="150"
+                        height="75"
                         className="d-inline-block align-top"
                     />
                 </Navbar.Brand>

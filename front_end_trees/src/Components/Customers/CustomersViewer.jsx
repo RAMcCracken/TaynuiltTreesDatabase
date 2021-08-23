@@ -3,9 +3,9 @@ import Button from 'react-bootstrap/Button'
 import Table from 'react-bootstrap/Table'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
-import { Modal } from 'react-bootstrap'
 import { withRouter } from "react-router";
 import { Link } from "react-router-dom"
+import DeleteConfirmation from '../DeleteConfirmation'
 
 
 class CustomersViewer extends Component {
@@ -48,11 +48,6 @@ class CustomersViewer extends Component {
         console.log(this.state.selectedCustomerRef)
         const customer_row = this.state.data.filter(row => row.customer_ref === this.state.selectedCustomerRef)[0];
         console.log(customer_row);
-        // this.props.history.push("/edit-customer")
-        // this.props.history.push(
-        //     "/edit-customer",
-        //     { state: { data: customer_row } }
-        // )
     }
 
     handleDelete = e => {
@@ -61,13 +56,9 @@ class CustomersViewer extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: {
-                customer_ref: this.state.selectedCustomerRef,
-            }
         };
 
-        requestOptions.body = JSON.stringify(requestOptions.body);
-        fetch('/api/customer', requestOptions)
+        fetch('/api/customer/' + this.state.selectedCustomerRef, requestOptions)
             .then(response => {
                 if (response.ok) {
                     const result = this.state.data.filter(row => row.customer_ref !== this.state.selectedCustomerRef);
@@ -94,7 +85,7 @@ class CustomersViewer extends Component {
 
     render() {
         return (
-            <Card className='m-4' xs={12}>
+            <Card className='m-2' xs={12}>
                 <Card.Title className='mt-4'>Customers</Card.Title>
                 {this.state.error ? <h4>{this.state.error}</h4> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
@@ -166,17 +157,14 @@ class CustomersViewer extends Component {
                                 </tbody>
                             </Table>
                         </Form>
-                        <Modal
-                            show={this.state.showDeleteConf}
-                            onHide={this.handleCloseDelete.bind(this)}
-                            backdrop="static"
-                        >
-                            <Modal.Body>Are you sure you want to delete this customer?</Modal.Body>
-                            <Modal.Footer>
-                                <Button onClick={this.handleCloseDelete.bind(this)}>No, cancel</Button>
-                                <Button variant="danger" onClick={this.handleDelete}>Yes, delete customer {this.state.selectedCustomerRef}</Button>
-                            </Modal.Footer>
-                        </Modal>
+                        <DeleteConfirmation
+                            handleClose={this.handleCloseDelete.bind(this)}
+                            handleShow={this.handleShowDelete.bind(this)}
+                            handleDelete={this.handleDelete.bind(this)}
+                            showDelete={this.state.showDeleteConf}
+                            table="customer"
+                            selectedRef={this.state.selectedCustomerRef}
+                        ></DeleteConfirmation>
                     </Card.Body>
                 }
 

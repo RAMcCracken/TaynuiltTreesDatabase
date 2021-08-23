@@ -1,12 +1,14 @@
 import './App.css';
 import Button from 'react-bootstrap/Button';
-import CustomersViewer from './Components/CustomersViewer';
-import OrdersViewer from './Components/OrdersViewer';
+import CustomersViewer from './Components/Customers/CustomersViewer';
+import OrdersViewer from './Components/Orders/OrdersViewer';
 import Welcome from './Components/Welcome';
 import Navigation from './Components/Navigation';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import CustomerCreator from './Components/CustomerCreator';
-import CustomerEditor from './Components/CustomerEditor';
+import CustomerCreator from './Components/Customers/CustomerCreator';
+import CustomerEditor from './Components/Customers/CustomerEditor';
+import OrderCreator from './Components/Orders/OrderCreator';
+import OrderEditor from './Components/Orders/OrderEditor';
 
 function App() {
   return (
@@ -17,9 +19,11 @@ function App() {
           <Switch>
             <Route exact path="/" component={Welcome} />
             <Route path="/Customers" component={CustomersViewer} />
-            <Route path="/Orders" component={OrdersViewer} />
             <Route path="/New-Customer" component={CustomerCreator} />
             <Route path="/Edit-Customer" component={CustomerEditor} />
+            <Route path="/Orders" component={OrdersViewer} />
+            <Route path="/New-Order" component={OrderCreator} />
+            <Route path="/Edit-Order" component={OrderEditor} />
           </Switch>
         </div>
 
