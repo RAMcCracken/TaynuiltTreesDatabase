@@ -137,7 +137,7 @@ router.post('/', function (req, res) {
   });
 })
 
-// edit order?
+// edit order
 router.put('/:old_order_no', function (req, res) {
   console.log(req.params.old_order_no)
   let db_pool = req.app.get('db_pool');
@@ -207,7 +207,7 @@ router.delete('/:order_no', function (req, res) {
 // expects => [[order_no,product_code,bags,quantity]]
 router.put('/:order_no/product', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = `Err: PUT /api/order/${req.params.order_no} -`;
+  let e_msg = `Err: PUT /api/order/${req.params.order_no}/product -`;
 
   db_pool.getConnection().then(conn => {
     conn.beginTransaction().then(() => {

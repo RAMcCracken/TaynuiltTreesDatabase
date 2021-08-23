@@ -27,11 +27,11 @@ app.use('/api/orders', orders_routes)
 const quote_routes = require('./routes/quote')
 app.use('/api/quote', quote_routes)
 
-app.get('/api', (req, res) => {
-  res.send('Hello API!')
-})
+const invoice_routes = require('./routes/invoice')
+app.use('/api/invoice', invoice_routes)
+
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send("ping")
 })
 
 app.listen(port, () => {
