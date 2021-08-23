@@ -138,16 +138,24 @@ router.post('/', function (req, res) {
 })
 
 // edit order?
-router.put('/', function (req, res) {
+router.put('/:old_order_no', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let o = req.body;
   let e_msg = "Err: PUT /api/order -";
   db_pool.getConnection().then(conn => {
     conn.query(`
-      UPDATE Orders SET order_no=?, order_date=?, credit_period=?, picked=?, location=?, stock_reserve=?, Customer_PO=?, quote_ref=?, customer_ref WHERE order_no = ?
-      `, [o.order_n,o.order_date,o.credit_period,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref,o.order_no]).then(() => {
-        conn.close();
-        res.send(o);
+      UPDATE Orders SET order_no=?, order_date=?, credit_period=?, picked=?, location=?, stock_reserve=?, Customer_PO=?, quote_ref=?, customer_ref=? WHERE order_no = ?
+      `, [o.order_no,o.order_date,o.credit_period,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref,req.params.old_order_no]).then(rows => {
+        if (rows.affectedRows !== 1) {
+          conn.end();
+          console.log(rows)
+          console.log(`${e_msg} editing order, doesn't exist`)
+          console.log(rows.affectedRows)
+          res.status(404).send(`${e_msg} editing order, doesn't exist`)
+        } else {
+          conn.close();
+          res.send(o);
+        }
       }).catch(err => {
         conn.end();
         console.log(`${e_msg} editing order\n${err}`)
@@ -167,7 +175,7 @@ router.delete('/:order_no', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.query(`
       DELETE FROM Orders WHERE order_no = ?
-      `, [req.params.order_n]).then((rows) => {
+      `, [req.params.order_no]).then((rows) => {
         if (rows.affectedRows !== 1) {
           conn.end();
           console.log(`${e_msg} deleting order, doesn't exist`)
