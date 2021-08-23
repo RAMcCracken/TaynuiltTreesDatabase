@@ -1,17 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// on a given order, associated order products in order products
-// also associated invoices with invoice products
-// also deliveries associated with invoices
-//
-// On orders, 
-
-// GET all orders/data, get sep query to get all order products given order.
-// GET order/:id - get invoices and order (maybe just invoices?)
-// Might want to show
-// POST ORDER, order products and order, use transaction
-
 // Middleware if we had any.
 router.use(function (req, res, next) {
   next()
@@ -98,13 +87,12 @@ router.get('/:order_no', function (req, res) {
                     // map returns an array of promises that we have to resolve
                     Promise.all(new_invoices).then(invoices => {
                       order.invoices = invoices
-                    }).then(() => {
                       conn.end();
                       res.send(order)
                     }).catch((err) => {
                       conn.end();
-                      console.log(`${e_msg} getting order\n${err}`)
-                      res.status(500).send(`${e_msg} getting order\n${err}`)
+                      console.log(`${e_msg} resolving nested invoice products\n${err}`)
+                      res.status(500).send(`${e_msg} resolving invoice products\n${err}`)
                     })
                   })
               })
@@ -127,7 +115,11 @@ router.get('/:order_no', function (req, res) {
       })
 })
 
+// edit order?
 
+// add order
+
+// delete order
 
 // export to main js file
 module.exports = router

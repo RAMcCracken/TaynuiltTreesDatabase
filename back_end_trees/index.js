@@ -24,6 +24,9 @@ app.use('/api/customer', customer_routes)
 const orders_routes = require('./routes/orders')
 app.use('/api/orders', orders_routes)
 
+const quote_routes = require('./routes/quote')
+app.use('/api/quote', quote_routes)
+
 app.get('/api', (req, res) => {
   res.send('Hello API!')
 })
