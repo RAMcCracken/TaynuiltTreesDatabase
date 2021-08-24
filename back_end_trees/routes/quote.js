@@ -32,7 +32,7 @@ router.get('/:quote_ref', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.query(`SELECT * FROM Quote WHERE quote_ref=?`,[req.params.quote_ref]).then(rows => {
       if (rows.length !== 1) {
-        util.handle_sql_error(`getting quote ${req.params.quote_ref}, doesn't exist`, e_msg, 404, err, res, conn);
+        util.handle_sql_error(`getting quote ${req.params.quote_ref}, doesn't exist`, e_msg, 404, "none", res, conn);
       } else {
         conn.end();
         res.send(rows);

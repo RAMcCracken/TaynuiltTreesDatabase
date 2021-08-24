@@ -113,7 +113,7 @@ router.put('/:old_customer_ref', function (req, res) {
                     util.handle_sql_error(`deleting old phone numbers`, e_msg, 500, err, res, conn);
                   })
               } else {
-                  util.handle_sql_error(`updating customer ${req.params.old_customer_ref}, customer doesn't exist`, e_msg, 404, err, res, conn);
+                  util.handle_sql_error(`updating customer ${req.params.old_customer_ref}, customer doesn't exist`, e_msg, 404, "none", res, conn);
               }
             })
             .catch((err) => {
@@ -142,7 +142,7 @@ router.delete('/:customer_ref', function (req, res) {
         .then((rows) => {
           conn.end();
           if (rows.affectedRows < 1) {
-            util.handle_sql_error(`customer ${req.params.customer_ref} does not exist`, e_msg, 404, err, res, conn);
+            util.handle_sql_error(`customer ${req.params.customer_ref} does not exist`, e_msg, 404, "none", res, conn);
           } else {
             res.send("")
           }

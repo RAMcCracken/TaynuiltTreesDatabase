@@ -133,7 +133,7 @@ router.put('/:old_order_no', function (req, res) {
       WHERE o.order_no=?
       `, [o.picked,o.credit_period,o.customer_po,o.order_no,o.customer_ref,o.order_date,o.location,o.quote_ref,o.stock_reserve,req.params.old_order_no]).then(rows => {
         if (rows.affectedRows !== 1) {
-          util.handle_sql_error(`editing order ${req.params.old_order_no}, doesn't exist`, e_msg, 404, err, res, conn);
+          util.handle_sql_error(`editing order ${req.params.old_order_no}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.close();
           res.send(o);
@@ -155,7 +155,7 @@ router.delete('/:order_no', function (req, res) {
       DELETE FROM Orders WHERE order_no = ?
       `, [req.params.order_no]).then((rows) => {
         if (rows.affectedRows !== 1) {
-          util.handle_sql_error(`deleting order ${req.params.order_no}, doesn't exist`, e_msg, 404, err, res, conn);
+          util.handle_sql_error(`deleting order ${req.params.order_no}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.close();
           res.send("");
@@ -183,7 +183,7 @@ router.put('/:order_no/product/:old_product_code', function (req, res) {
       `,[o.invoice_no,o.product_code,o.bags,o.quantity,req.params.old_order_no,req.params.old_product_code])
       .then(rows => {
         if (rows.affectedRows !== 1) {
-          util.handle_sql_error(`updating order product ${req.params.old_order_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, err, res, conn);
+          util.handle_sql_error(`updating order product ${req.params.old_order_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.end();
           res.send(i);

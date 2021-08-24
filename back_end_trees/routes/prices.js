@@ -32,7 +32,7 @@ router.get('/:price_code', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.query(`SELECT * FROM Prices WHERE price_code=?`,[req.params.price_code]).then(rows => {
       if (rows.length !== 1) {
-        util.handle_sql_error(`getting price ${req.params.price_code}, doesn't exist`, e_msg, 404, err, res, conn);
+        util.handle_sql_error(`getting price ${req.params.price_code}, doesn't exist`, e_msg, 404, "none", res, conn);
       } else {
         conn.end();
         res.send(rows);

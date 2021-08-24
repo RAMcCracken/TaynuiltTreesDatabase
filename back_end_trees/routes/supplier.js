@@ -121,7 +121,7 @@ router.put('/:old_supplier_code', function (req, res) {
                     util.handle_sql_error(`deleting old phone numbers`, e_msg, 500, err, res, conn);
                   })
               } else {
-                  util.handle_sql_error(`updating supplier ${req.params.old_supplier_code}, supplier doesn't exist`, e_msg, 404, err, res, conn);
+                  util.handle_sql_error(`updating supplier ${req.params.old_supplier_code}, supplier doesn't exist`, e_msg, 404, "none", res, conn);
               }
             })
             .catch((err) => {

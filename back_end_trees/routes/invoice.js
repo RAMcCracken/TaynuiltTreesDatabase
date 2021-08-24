@@ -38,7 +38,7 @@ router.put('/:invoice_no', function (req, res) {
       WHERE invoice_no=?
       `,[i.invoice_no,i.invoice_date,i.discount,i.vat,i.payment_method,i.paid,i.date_paid,i.order_no,i.delivery_ref,req.params.invoice_no]).then(rows => {
         if (rows.affectedRows !== 1) {
-          util.handle_sql_error(`updating invoice ${req.params.invoice_no}, invoice doesn't exist`, e_msg, 404, err, res, conn);
+          util.handle_sql_error(`updating invoice ${req.params.invoice_no}, invoice doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.end();
           res.send(i);
@@ -61,7 +61,7 @@ router.put('/:invoice_no', function (req, res) {
       DELETE FROM Invoice WHERE invoice_no = ?
       `, [req.params.invoice_no]).then((rows) => {
         if (rows.affectedRows !== 1) {
-          util.handle_sql_error(`deleting invoice ${req.params.invoice_no}, doesn't exist`, e_msg, 404, err, res, conn);
+          util.handle_sql_error(`deleting invoice ${req.params.invoice_no}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.close();
           res.send("");
@@ -87,7 +87,7 @@ router.put('/:old_invoice_no/product/:old_product_code', function (req, res) {
       `,[i.invoice_no,i.product_code,i.bags,i.quantity,req.params.old_invoice_no,req.params.old_product_code])
       .then(rows => {
         if (rows.affectedRows !== 1) {
-          util.handle_sql_error(`updating invoice product ${req.params.old_invoice_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, err, res, conn);
+          util.handle_sql_error(`updating invoice product ${req.params.old_invoice_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.end();
           res.send(i);

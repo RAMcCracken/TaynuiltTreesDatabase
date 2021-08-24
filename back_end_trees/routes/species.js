@@ -32,7 +32,7 @@ router.get('/:species_code', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.query(`SELECT * FROM Species WHERE species_code=?`,[req.params.species_code]).then(rows => {
       if (rows.length !== 1) {
-        util.handle_sql_error(`getting species ${req.params.species_code}, doesn't exist`, e_msg, 404, err, res, conn);
+        util.handle_sql_error(`getting species ${req.params.species_code}, doesn't exist`, e_msg, 404, "none", res, conn);
       } else {
         conn.end();
         res.send(rows);
