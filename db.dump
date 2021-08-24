@@ -100,7 +100,7 @@ CREATE TABLE `Delivery` (
 
 LOCK TABLES `Delivery` WRITE;
 /*!40000 ALTER TABLE `Delivery` DISABLE KEYS */;
-INSERT INTO `Delivery` VALUES ('d1','my house','on my st','in my town','postcod','2020-11-07','ban',1.00,1,NULL),('d2','my house','on my st','in my town','postcod','2020-11-07','ban',1.00,1,NULL);
+INSERT INTO `Delivery` VALUES ('d1','my house','on my st','in my town','postcod','2020-11-07','ban',1.00,1,NULL),('d2','my house','on my st','in my town','postcod','2020-11-07','ban',1.00,1,NULL),('d3','1','1','1','1','2020-10-08','1',1.00,1,NULL);
 /*!40000 ALTER TABLE `Delivery` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -204,7 +204,7 @@ CREATE TABLE `Invoice` (
   `payment_method` enum('bacs','cheque','cash') DEFAULT NULL,
   `paid` tinyint(1) DEFAULT NULL,
   `date_paid` date DEFAULT NULL,
-  `order_no` varchar(100) DEFAULT NULL,
+  `order_no` varchar(100) NOT NULL,
   `delivery_ref` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`invoice_no`),
   UNIQUE KEY `Invoice_UN` (`delivery_ref`),
@@ -212,7 +212,8 @@ CREATE TABLE `Invoice` (
   CONSTRAINT `Invoice_FK` FOREIGN KEY (`order_no`) REFERENCES `Orders` (`order_no`) ON UPDATE CASCADE,
   CONSTRAINT `Invoice_FK_2` FOREIGN KEY (`delivery_ref`) REFERENCES `Delivery` (`delivery_ref`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `Invoice_CHECK_discount` CHECK (`discount` <= 100 and `discount` >= 0),
-  CONSTRAINT `Invoice_CHECK_vat` CHECK (`vat` <= 100 and `vat` >= 0)
+  CONSTRAINT `Invoice_CHECK_vat` CHECK (`vat` <= 100 and `vat` >= 0),
+  CONSTRAINT `Invoice_CHECK_paid` CHECK (`paid` = 1 or `paid` = 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -222,7 +223,7 @@ CREATE TABLE `Invoice` (
 
 LOCK TABLES `Invoice` WRITE;
 /*!40000 ALTER TABLE `Invoice` DISABLE KEYS */;
-INSERT INTO `Invoice` VALUES ('i1','2000-01-01',0,1,'bacs',0,'2000-02-01','o4','d1'),('i2','2000-01-01',0,1,'bacs',0,'2000-02-01','o4','d2');
+INSERT INTO `Invoice` VALUES ('i1','2000-01-01',0,1,'bacs',0,'2000-02-01','o4','d1'),('i2','2000-01-01',0,1,'bacs',0,'2000-02-01','o4','d2'),('i3','2000-01-01',NULL,NULL,NULL,NULL,'2000-02-01','o4','d3');
 /*!40000 ALTER TABLE `Invoice` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -764,7 +765,9 @@ CREATE TABLE `Orders` (
   KEY `Order_FK` (`quote_ref`),
   KEY `Order_FK_1` (`customer_ref`),
   CONSTRAINT `Order_FK` FOREIGN KEY (`quote_ref`) REFERENCES `Quote` (`quote_ref`) ON UPDATE CASCADE,
-  CONSTRAINT `Order_FK_1` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `Order_FK_1` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Orders_CHECK` CHECK (`picked` = 1 or `picked` = 0),
+  CONSTRAINT `Orders_CHECK_stock` CHECK (`stock_reserve` = 1 or `stock_reserve` = 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -774,7 +777,7 @@ CREATE TABLE `Orders` (
 
 LOCK TABLES `Orders` WRITE;
 /*!40000 ALTER TABLE `Orders` DISABLE KEYS */;
-INSERT INTO `Orders` VALUES ('o123','2021-08-10',30,1,'Shed',0,'PO123','q4','c1'),('o4','2000-07-23',1234,1,'122',123,'122','q1','a4'),('o6','2000-06-23',1234,1,'122',123,'122','q3','a4');
+INSERT INTO `Orders` VALUES ('o4','2000-01-01',1234,1,'122',1,'122','q1','a4'),('o6','2000-06-23',1234,1,'122',0,'122','q3','a4');
 /*!40000 ALTER TABLE `Orders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -790,7 +793,7 @@ DELIMITER ;;
 BEFORE INSERT
 ON `Orders` FOR EACH ROW
 BEGIN 
-	DECLARE invoice_dt INT;
+	DECLARE invoice_dt DATE;
 	SELECT invoice_date
 		INTO invoice_dt
 		FROM Invoice i2
@@ -817,14 +820,29 @@ DELIMITER ;;
 BEFORE UPDATE 
 ON `Orders` FOR EACH ROW
 BEGIN 
+	DECLARE invoice_dt DATE;
+	DECLARE done INT DEFAULT FALSE;
+
+	DECLARE MY_CURSOR CURSOR FOR 
+	SELECT invoice_date
+	FROM Invoice i2
+	WHERE NEW.order_no = i2.order_no;
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+	OPEN MY_CURSOR;
+	read_loop: LOOP
+		FETCH MY_CURSOR INTO invoice_dt;
+		IF done THEN
+			LEAVE read_loop;
+    	END IF;
+   		IF NEW.order_date > invoice_dt then
+			SIGNAL sqlstate '45001' set message_text = "This order date is not valid, please enter an order date before the invoice date";
+				LEAVE read_loop;
 	
-	
-	
-	
-	
-	
-	
-	
+	END IF;
+   	END LOOP;
+
+	CLOSE MY_CURSOR;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1170,4 +1188,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-24  9:26:50
+-- Dump completed on 2021-08-24 12:49:32
