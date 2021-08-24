@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const util = require('../utilities');
 
 // Middleware if we had any.
 router.use(function (req, res, next) {
@@ -24,15 +25,11 @@ router.get('/', function (req, res) {
           res.send(rows);
         })
         .catch(err => {
-          conn.end();
-          console.log(`${e_msg} getting customers\n${err}`)
-          res.status(500).send(`${e_msg} getting customers\n${err}`)
+          util.handle_sql_error(`getting customers`, e_msg, 500, err, res, conn);
         })
       })
       .catch(err => {
-            conn.end();
-            console.log(`${e_msg} getting connection from pool\n${err}`)
-            res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+        util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
       })
 })
 
@@ -61,29 +58,19 @@ router.post('/', async function (req, res) {
                   res.json(c);
                 })
                 .catch((err) => {
-                  console.log(`${e_msg} adding customer, phone numbers failed\n${err}`);
-                  conn.rollback();
-                  conn.end();
-                  res.status(500).send(`${e_msg} adding customer, phone numbers failed\n${err}`);
+                  util.handle_sql_error(`adding customer, phone number insertsion failed`, e_msg, 500, err, res, conn);
                 })
             })
             .catch((err) => {
-              console.log(`${e_msg} adding customer\n${err}`);
-              conn.rollback();
-              conn.end();
-              res.status(500).send(`${e_msg} adding customer\n${err}`);
+              util.handle_sql_error(`adding customer`, e_msg, 500, err, res, conn);
             })
       })
       .catch((err) => {
-        console.log(`${e_msg} beginning transaction\n${err}`);
-        conn.rollback();
-        conn.end();
-        res.status(500).send(`${e_msg} beginning transaction\n${err}`);
+        util.handle_sql_error(`whilst starting transaction`, e_msg, 500, err, res, conn);
       })
   })
   .catch((err) => {
-    console.log(`${e_msg} getting connection from pool\n${err}`);
-    res.status(500).send(`${e_msg} getting connection from pool\n${err}`);
+    util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
   })
 })
 
@@ -116,46 +103,30 @@ router.put('/:old_customer_ref', function (req, res) {
                             res.json(c);
                           })
                           .catch((err) => {
-                            conn.end();
-                            res.status(500).send(`${e_msg} failed to commit transaction\n${err}`);
+                            util.handle_sql_error(`failed to commit transaction, no changes made`, e_msg, 500, err, res, conn);
                           })
                       })
                       .catch((err) => {
-                        console.log(`${e_msg} inserting new phone numbers\n${err}`);
-                        conn.rollback();
-                        conn.end();
-                        res.status(500).send(`${e_msg} inserting new phone numbers\n${err}`);
+                        util.handle_sql_error(`inserting new phone numbers`, e_msg, 500, err, res, conn);
                       })
                   })
                   .catch((err) => {
-                    console.log(`${e_msg} deleting old phone numbers\n${err}`);
-                    conn.rollback();
-                    conn.end();
-                    res.status(500).send(`${e_msg} deleting old phone numbers\n${err}`);
+                    util.handle_sql_error(`deleting old phone numbers`, e_msg, 500, err, res, conn);
                   })
               } else {
-                  console.log(`${e_msg} updating customer, customer doesn't exist`);
-                  conn.rollback();
-                  conn.end();
-                  res.status(404).send(`${e_msg} updating customer, customer doesn't exist`);
+                  util.handle_sql_error(`updating customer ${req.params.old_customer_ref}, customer doesn't exist`, e_msg, 404, err, res, conn);
               }
             })
             .catch((err) => {
-                console.log(`${e_msg} updating customer\n${err}`);
-                conn.rollback();
-                conn.end();
-                res.status(500).send(`${e_msg} updating customer\n${err}`);
+              util.handle_sql_error(`updating customer`, e_msg, 500, err, res, conn);
             })
         })
         .catch((err) => {
-          conn.end();
-          console.log(`${e_msg} creating transaction\n${err}`);
-          res.status(500).send(`${e_msg} creating transaction\n${err}`);
+          util.handle_sql_error(`creating transaction`, e_msg, 500, err, res, conn);
         })
     })
     .catch((err) => {
-      console.log(`${e_msg} getting connection from pool\n${err}`);
-      res.status(500).send(`${e_msg} getting connection from pool\n${err}`);
+      util.handle_sql_error(`getting connetion from pool`, e_msg, 500, err, res, conn);
     })
 })
 
@@ -172,21 +143,17 @@ router.delete('/:customer_ref', function (req, res) {
         .then((rows) => {
           conn.end();
           if (rows.affectedRows < 1) {
-            res.status(404).send(`${e_msg} customer ${req.params.customer_ref} does not exist`)
+            util.handle_sql_error(`customer ${req.params.customer_ref} does not exist`, e_msg, 404, err, res, conn);
           } else {
             res.status(200).send("")
           }
         })
         .catch((err) => {
-          conn.end();
-          console.log(`${e_msg} deleting customer\n${err}`);
-          res.status(500).send(`${e_msg} deleting customer\n${err}`);
+          util.handle_sql_error(`deleting customer`, e_msg, 500, err, res, conn);
         })
     })
     .catch((err) => {
-      conn.end();
-      console.log(`${e_msg} getting connection from pool\n${err}`);
-      res.status(500).send(`${e_msg} getting connection from pool\n${err}`);
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
     })
 })
 
