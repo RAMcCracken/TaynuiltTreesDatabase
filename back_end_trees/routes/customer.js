@@ -45,6 +45,7 @@ router.get('/:customer_ref', function (req, res) {
         LEFT JOIN Customer_Phone cp ON
           c.customer_ref = cp.customer_ref
         WHERE c.customer_ref = ?
+        GROUP BY s.supplier_code
         `,[req.params.customer_ref])
         .then(rows => {
           if (rows.length !== 1) {

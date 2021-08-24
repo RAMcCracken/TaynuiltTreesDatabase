@@ -33,12 +33,75 @@ router.get('/', function (req, res) {
       })
 })
 
-// For a given supplier, return their details and all of their products
+// GET a single supplier and their phone numbers
 router.get('/:supplier_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let e_msg = `Err: GET /api/supplier/${req.params.supplier_code} -`;
 
-  // do stuff
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT s.*, GROUP_CONCAT(sp.phone_number) AS phone_numbers 
+        FROM Supplier s
+        LEFT JOIN Supplier_Phone sp ON
+          s.supplier_code = sp.supplier_code
+        WHERE s.supplier_code=?
+        GROUP BY s.supplier_code
+        `,[req.params.supplier_code])
+        .then(rows => {
+          if (rows.length !== 1) {
+            util.handle_sql_error(`getting supplier ${req.params.supplier_code}, doesn't exist`, e_msg, 404, "none", res, conn);
+          } else {
+            conn.end();
+            res.send(rows);
+          }
+        })
+        .catch(err => {
+          util.handle_sql_error(`getting supplier`, e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+        util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+      })
+})
+
+// GET a single supplier and their phone numbers, and all of their products
+router.get('/:supplier_code/detailed', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: GET /api/supplier/${req.params.supplier_code}/detailed -`;
+
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT s.*, GROUP_CONCAT(sp.phone_number) AS phone_numbers 
+        FROM Supplier s
+        LEFT JOIN Supplier_Phone sp ON
+          s.supplier_code = sp.supplier_code
+        WHERE s.supplier_code=?
+        GROUP BY s.supplier_code
+        `,[req.params.supplier_code])
+        .then(supplier => {
+          if (supplier.length !== 1) {
+            util.handle_sql_error(`getting supplier ${req.params.supplier_code}, doesn't exist`, e_msg, 404, "none", res, conn);
+          } else {
+            // get products
+            conn.query(`
+              SELECT * FROM Product WHERE supplier_code = ?
+              `,[req.params.supplier_code]).then(products => {
+                conn.end();
+                res.json({supplier:supplier, products:products});
+              }).catch(err => {
+                util.handle_sql_error(`getting supplier's products`, e_msg, 500, err, res, conn);
+              })
+          }
+        })
+        .catch(err => {
+          util.handle_sql_error(`getting supplier`, e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+        util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+      })
 })
 
 // Add a new supplier, with phone numbers, using a transaction in case either insertion fails

@@ -55,7 +55,7 @@ router.get('/:order_no', function (req, res) {
       })
 })
 
-// GET a order by :order_ref.
+// GET a detailed order by :order_ref.
 // Return all ass order_products, invoices, and each invoices ass products.
 // order: {order_products: [], invoices: [data: foo, invoice_products: []]}
 router.get('/:order_no/detailed', function (req, res) {
