@@ -33,6 +33,32 @@ router.get('/', function (req, res) {
       })
 })
 
+// single customer with their phone numbers comma seperated
+router.get('/:customer_ref', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: GET /api/customer/${req.params.customer_ref} -`;
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT c.*, GROUP_CONCAT(cp.phone_number) AS phone_numbers 
+        FROM Customer c
+        LEFT JOIN Customer_Phone cp ON
+          c.customer_ref = cp.customer_ref
+        WHERE c.customer_ref = ?
+        `,[req.params.customer_ref])
+        .then(rows => {
+          conn.end();
+          res.send(rows);
+        })
+        .catch(err => {
+          util.handle_sql_error(`getting customer ${req.params.customer_ref}`, e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+        util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+      })
+})
+
 // Add a new customer, with phone numbers, using a transaction in case either insertion fails
 router.post('/', async function (req, res) {
   let db_pool = req.app.get('db_pool');
