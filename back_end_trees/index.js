@@ -30,7 +30,7 @@ app.use('/api/quote', quote_routes)
 const invoice_routes = require('./routes/invoice')
 app.use('/api/invoice', invoice_routes)
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.send("ping")
 })
 
