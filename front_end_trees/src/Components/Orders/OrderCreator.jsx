@@ -56,6 +56,7 @@ class OrderCreator extends Component {
     handleSubmit = e => {
         e.preventDefault();
         console.log(this.formatDate(this.state.order_date));
+
     }
 
     render() {

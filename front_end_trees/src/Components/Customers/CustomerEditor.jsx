@@ -15,6 +15,7 @@ class CustomerEditor extends Component {
         })
         this.state = {
             phoneFields: data ? phone_ids : [{ id: 1, number: "" }],
+            old_custref: data ? data.customer_ref : "",
             custref: data ? data.customer_ref : "",
             firstname: data ? data.firstname : "",
             surname: data ? data.surname : "",
@@ -76,7 +77,7 @@ class CustomerEditor extends Component {
             }
         };
         requestOptions.body = JSON.stringify(requestOptions.body);
-        fetch('/api/customer/' + this.state.custref, requestOptions)
+        fetch('/api/customer/' + this.state.old_custref, requestOptions)
             .then(response => {
                 response.json();
                 if (response.ok) {
