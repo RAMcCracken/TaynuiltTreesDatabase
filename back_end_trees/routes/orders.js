@@ -216,26 +216,23 @@ router.post(`/:order_no/product`, function (req, res) {
   })
 })
 
-// TODO change this to match invoice
-// Edit an orders order products via transaction deleting
-// them all, then adding in the ones given.
-// expects => [[order_no,product_code,bags,quantity]]
-router.put('/:order_no/product/:old_product_code', function (req, res) {
+// PUT update an order product
+router.put('/:old_order_no/product/:old_product_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let e_msg = `Err: PUT /api/order/${req.params.old_order_no}/product/${req.params.old_product_code} -`;
   let o = req.body;
 
   db_pool.getConnection().then(conn => {
     conn.query(`
-      UPDATE Order_Products SET invoice_no=?,product_code=?,bags=?,quantity=?
-      WHERE invoice_no=? AND product_code=?
-      `,[o.invoice_no,o.product_code,o.bags,o.quantity,req.params.old_order_no,req.params.old_product_code])
+      UPDATE Order_Products SET order_no=?,product_code=?,bags=?,quantity=?
+      WHERE order_no=? AND product_code=?
+      `,[o.order_no,o.product_code,o.bags,o.quantity,req.params.old_order_no,req.params.old_product_code])
       .then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error(`updating order product ${req.params.old_order_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.end();
-          res.send(i);
+          res.send(o);
         }
       })
       .catch(err => {

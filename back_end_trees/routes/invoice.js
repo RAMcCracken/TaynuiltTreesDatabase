@@ -122,6 +122,27 @@ router.put('/:invoice_no', function (req, res) {
   });
 })
 
+// POST an invoice product
+router.post(`/:invoice_no/product`, function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: POST /api/invoice/${req.params.invoice_no}/product -`;
+  let i = req.body;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      INSERT INTO Invoice_Products (invoice_no, product_code, bags, quantity)
+      VALUES (?,?,?,?)
+      `, [i.invoice_no,i.product_code,i.bags,i.quantity,]).then(() => {
+        conn.end();
+        res.send("");
+      }).catch(err => {
+          util.handle_sql_error(`adding invoice product`, e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+  })
+})
+
 // PUT update an invoice product
 router.put('/:old_invoice_no/product/:old_product_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
