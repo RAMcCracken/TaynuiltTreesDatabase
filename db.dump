@@ -1,8 +1,8 @@
--- MariaDB dump 10.19  Distrib 10.6.3-MariaDB, for debian-linux-gnu (x86_64)
+-- MariaDB dump 10.19  Distrib 10.6.4-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: taynuilttrees
 -- ------------------------------------------------------
--- Server version	10.6.3-MariaDB-1:10.6.3+maria~focal
+-- Server version	10.6.4-MariaDB-1:10.6.4+maria~focal
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -1061,27 +1061,6 @@ LOCK TABLES `Supplier_Phone` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `banana`
---
-
-DROP TABLE IF EXISTS `banana`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `banana` (
-  `Column1` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `banana`
---
-
-LOCK TABLES `banana` WRITE;
-/*!40000 ALTER TABLE `banana` DISABLE KEYS */;
-/*!40000 ALTER TABLE `banana` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Dumping routines for database 'taynuilttrees'
 --
 /*!50003 DROP FUNCTION IF EXISTS `generate_invoice_total` */;
@@ -1188,4 +1167,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-24 12:49:32
+-- Dump completed on 2021-08-24 14:18:13
