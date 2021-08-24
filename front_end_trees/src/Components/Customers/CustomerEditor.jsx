@@ -54,6 +54,16 @@ class CustomerEditor extends Component {
         });
     };
 
+    handleAdd = (id) => {
+        this.setState({ phoneFields: [...this.state.phoneFields, { id: id + 2, number: "" }] })
+    }
+
+    handleSubtract = (i) => {
+        const values = [...this.state.phoneFields]
+        values.splice(i, 1)
+        this.setState({ phoneFields: [...values] })
+    }
+
     handleSubmit = (e) => {
         e.preventDefault();
 
@@ -116,6 +126,8 @@ class CustomerEditor extends Component {
                             handleChange={this.handleChange.bind(this)}
                             handleSubmit={this.handleSubmit.bind(this)}
                             handleChangePhone={this.handleChangePhone.bind(this)}
+                            handleAdd={this.handleAdd.bind(this)}
+                            handleSubtract={this.handleSubtract.bind(this)}
                         ></CustomerForm>
                     </Card.Body>
                 }

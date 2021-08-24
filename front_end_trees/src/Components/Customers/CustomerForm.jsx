@@ -5,15 +5,6 @@ import { Col, Row } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
 
 function CustomerForm(props) {
-    const handleAdd = (id) => {
-        props.setPhoneFields([...props.phoneFields, { id: id + 2, number: "" }])
-    }
-
-    const handleSubtract = (i) => {
-        const values = [...props.phoneFields]
-        values.splice(i, 1)
-        props.setPhoneFields([...values])
-    }
 
     return (
         <Form className="w-50" onSubmit={props.handleSubmit}>
@@ -136,10 +127,10 @@ function CustomerForm(props) {
                                 />
                             </Col>
                             <Col xs={1} className="d-flex flex-col align-self-end">
-                                <Button onClick={() => handleAdd(i)}><PlusCircle></PlusCircle></Button>
+                                <Button onClick={() => props.handleAdd(i)}><PlusCircle></PlusCircle></Button>
                             </Col>
                             <Col xs={1} className="d-flex flex-col align-self-end">
-                                <Button className="mt-4" disabled={field.id === 1} onClick={() => handleSubtract(i)}><DashCircle></DashCircle></Button>
+                                <Button className="mt-4" disabled={field.id === 1} onClick={() => props.handleSubtract(i)}><DashCircle></DashCircle></Button>
                             </Col>
                         </Row>
                     </div>

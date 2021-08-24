@@ -65,6 +65,14 @@ class OrderCreator extends Component {
             }
         }
         requestOptions.body = JSON.stringify(requestOptions.body);
+        fetch('/api/order', requestOptions)
+            .then(response => {
+                response.json();
+                if (response.ok) {
+                    e.target.reset();
+                    this.props.history.push("/orders");
+                }
+            })
     }
 
     render() {
