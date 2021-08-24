@@ -9,6 +9,7 @@ import CustomerCreator from './Components/Customers/CustomerCreator';
 import CustomerEditor from './Components/Customers/CustomerEditor';
 import OrderCreator from './Components/Orders/OrderCreator';
 import OrderEditor from './Components/Orders/OrderEditor';
+import OrderSummary from './Components/Orders/OrderSummary'
 
 function App() {
   return (
@@ -21,9 +22,10 @@ function App() {
             <Route path="/Customers" component={CustomersViewer} />
             <Route path="/New-Customer" component={CustomerCreator} />
             <Route path="/Edit-Customer" component={CustomerEditor} />
-            <Route path="/Orders" component={OrdersViewer} />
+            <Route exact path="/Orders" component={OrdersViewer} />
             <Route path="/New-Order" component={OrderCreator} />
             <Route path="/Edit-Order" component={OrderEditor} />
+            <Route path="/Orders/:id" component={OrderSummary} />
           </Switch>
         </div>
 
