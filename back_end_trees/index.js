@@ -35,6 +35,8 @@ const prices_routes = require('./routes/prices')
 app.use('/api/price', prices_routes)
 const species_routes = require('./routes/species')
 app.use('/api/species', species_routes)
+const delivery_routes = require('./routes/delivery')
+app.use('/api/delivery', delivery_routes)
 
 app.get('/', (_, res) => {
   res.send("ping")
