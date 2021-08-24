@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form'
 import { Link } from "react-router-dom"
 import { withRouter } from "react-router";
 import DeleteConfirmation from '../DeleteConfirmation'
+const util = require("../../Utils")
 
 class OrdersViewer extends Component {
     constructor(props) {
@@ -24,16 +25,20 @@ class OrdersViewer extends Component {
     }
 
     fetchOrderData() {
-        fetch('/api/orders')
+        fetch('/api/order')
             .then(response => {
                 if (response.ok) {
                     return response.json()
                 } else {
-                    this.setState({ error: "Problem occurred fetching order data" })
+                    let err = "Problem occurred fetching order data"
+                    throw new Error(err);
                 }
             })
             .then(data => {
                 this.setState({ data: data, loading: false, error: null })
+            })
+            .catch(error => {
+                this.setState({ error: error.message, loading: false })
             });
     }
 
@@ -86,14 +91,14 @@ class OrdersViewer extends Component {
         return (
             <Card className='m-4'>
                 <Card.Title className='mt-4'>Orders</Card.Title>
-                {this.state.error ? <h4>{this.state.error}</h4> : <div />}
+                {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
                     <Card.Body>
                         <Link to={
                             {
                                 pathname: "/edit-order",
                                 state: {
-                                    data: this.state.data.filter(row => row.order_no === this.state.selectedOrderNo)[0]
+                                    data: this.state.data ? this.state.data.filter(row => row.order_no === this.state.selectedOrderNo)[0] : ""
                                 }
                             }
                         }>
@@ -129,7 +134,7 @@ class OrdersViewer extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.state.data.map(order => {
+                                    {this.state.data ? this.state.data.map(order => {
                                         return (
                                             <tr key={order.order_no}>
                                                 <td>
@@ -143,7 +148,7 @@ class OrdersViewer extends Component {
                                                     />
                                                 </td>
                                                 <td>{order.order_no}</td>
-                                                <td>{order.order_date}</td>
+                                                <td>{util.formatDate(order.order_date)}</td>
                                                 <td>{order.credit_period}</td>
                                                 <td>{order.picked}</td>
                                                 <td>{order.location}</td>
@@ -153,7 +158,7 @@ class OrdersViewer extends Component {
                                                 <td>{order.customer_ref}</td>
                                             </tr>
                                         );
-                                    })}
+                                    }) : <tr></tr>}
                                 </tbody>
 
                             </Table>

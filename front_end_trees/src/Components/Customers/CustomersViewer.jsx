@@ -30,11 +30,15 @@ class CustomersViewer extends Component {
                 if (response.ok) {
                     return response.json()
                 } else {
-                    this.setState({ error: "Problem occurred fetching customer data" })
+                    let err = "Problem occurred fetching order data"
+                    throw new Error(err);
                 }
             })
             .then(data => {
                 this.setState({ data: data, loading: false, error: null })
+            })
+            .catch(error => {
+                this.setState({ error: error.message, loading: false })
             });
     }
 
@@ -87,7 +91,7 @@ class CustomersViewer extends Component {
         return (
             <Card className='m-2' xs={12}>
                 <Card.Title className='mt-4'>Customers</Card.Title>
-                {this.state.error ? <h4>{this.state.error}</h4> : <div />}
+                {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
                     <Card.Body>
                         <Link to={

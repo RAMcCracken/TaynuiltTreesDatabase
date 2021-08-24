@@ -25,7 +25,7 @@ function OrderForm(props) {
             </Form.Group>
             <Form.Group className="mb-3" controlId="name">
                 <Row>
-                    <Col xs={4}>
+                    <Col xs={12} md={8}>
                         <Form.Label className="d-flex align-self-left">Date</Form.Label>
                         {/* <Form.Control
                             type="text"
@@ -40,7 +40,7 @@ function OrderForm(props) {
                             onChange={e => props.handleDateChange(e)}
                         ></DatePicker>
                     </Col>
-                    <Col xs={3}>
+                    <Col xs={12} md={4}>
                         <Row className="mt-3">
                             <Form.Check
                                 type="checkbox"
@@ -48,7 +48,7 @@ function OrderForm(props) {
                                 checked={props.picked}
                                 label="Picked"
                                 value={props.picked}
-                                onChange={e => props.handleOptionChange}
+                                onChange={e => props.handleOptionChange(e)}
                             />
                         </Row>
                         <Row className="mt-1">
@@ -56,9 +56,9 @@ function OrderForm(props) {
                                 type="checkbox"
                                 label="Stock Reserve"
                                 name="stock_reserve"
-                                checked={props.picked}
+                                checked={props.stock_reserve}
                                 value={props.stock_reserve}
-                                onChange={e => props.handleOptionChange}
+                                onChange={e => props.handleOptionChange(e)}
                             />
                         </Row>
                     </Col>
@@ -67,7 +67,7 @@ function OrderForm(props) {
             </Form.Group>
             <Form.Group className="mb-3" controlId="Credit">
                 <Row>
-                    <Col xs={4}>
+                    <Col xs={12} md={4}>
                         <Form.Label className="d-flex align-self-left">Credit Period</Form.Label>
                         <Form.Control
                             type="text"
@@ -77,7 +77,7 @@ function OrderForm(props) {
                             onChange={e => props.handleChange(e)}
                         />
                     </Col>
-                    <Col xs={8}>
+                    <Col xs={12} md={8}>
                         <Form.Label className="d-flex align-self-left">Location</Form.Label>
                         <Form.Control
                             type="text"
@@ -105,7 +105,7 @@ function OrderForm(props) {
             </Form.Group>
             <Form.Group className="mb-3" controlId="quote">
                 <Row>
-                    <Col xs={6}>
+                    <Col xs={12} md={6}>
                         <Form.Label className="d-flex align-self-left">Quote Ref</Form.Label>
                         <Form.Control
                             type="text"
@@ -115,7 +115,7 @@ function OrderForm(props) {
                             onChange={e => props.handleChange(e)}
                         />
                     </Col>
-                    <Col xs={6}>
+                    <Col xs={12} md={6}>
                         <Form.Label className="d-flex align-self-left">Customer Ref</Form.Label>
                         <Form.Control
                             type="text"

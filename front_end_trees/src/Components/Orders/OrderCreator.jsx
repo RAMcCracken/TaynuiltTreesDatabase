@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Card from 'react-bootstrap/Card'
 import OrderForm from './OrderForm'
+const util = require("../../Utils")
 
 class OrderCreator extends Component {
     constructor(props) {
@@ -34,45 +35,51 @@ class OrderCreator extends Component {
     }
 
     handleOptionChange = e => {
+        const target = e.target;
+        const value = target.checked;
+        const name = target.name;
         this.setState({
-            picked: e.target.value
+            [name]: value
         });
     };
 
-    formatDate(date) {
-        var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-
-        if (month.length < 2)
-            month = '0' + month;
-        if (day.length < 2)
-            day = '0' + day;
-
-        return [year, month, day].join('-');
-    }
 
     handleSubmit = e => {
         e.preventDefault();
-        console.log(this.formatDate(this.state.order_date));
+        console.log(this.state.customer_po);
         const requestOptions = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: {
+                order_no: this.state.order_no,
+                order_date: util.formatDate(this.state.order_date),
+                credit_period: this.state.credit_period,
+                picked: this.state.picked,
+                location: this.state.location,
+                stock_reserve: this.state.stock_reserve,
+                customer_po: this.state.customer_po,
+                quote_ref: this.state.quote_ref,
+                customer_ref: this.state.customer_ref,
             }
         }
         requestOptions.body = JSON.stringify(requestOptions.body);
         fetch('/api/order', requestOptions)
             .then(response => {
-                response.json();
                 if (response.ok) {
                     e.target.reset();
                     this.props.history.push("/orders");
+                } else {
+                    return response.json().then((error) => {
+                        let err = error.message
+                        throw new Error(err);
+                    })
                 }
             })
+            .catch(error => {
+                this.setState({ error: error.message, loading: false })
+            });
     }
 
     render() {
@@ -94,6 +101,7 @@ class OrderCreator extends Component {
                         handleChange={this.handleChange.bind(this)}
                         handleDateChange={this.handleDateChange.bind(this)}
                         handleSubmit={this.handleSubmit.bind(this)}
+                        handleOptionChange={this.handleOptionChange.bind(this)}
                     ></OrderForm>
                 </Card.Body>
             </Card >
