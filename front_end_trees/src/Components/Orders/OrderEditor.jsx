@@ -8,9 +8,15 @@ class OrderCreator extends Component {
         super(props)
         const data = this.props.location && this.props.location.state ?
             this.props.location.state.data : null
+        let date
+        if (data) {
+            date = new Date(Date.parse(data.order_date))
+        }
+
         this.state = {
+            old_order_no: data ? data.order_no : "",
             order_no: data ? data.order_no : "",
-            order_date: data ? data.order_date : "",
+            order_date: data ? date : "",
             credit_period: data ? data.credit_period : 0,
             picked: data ? data.picked : false,
             location: data ? data.location : "",
@@ -50,7 +56,7 @@ class OrderCreator extends Component {
         e.preventDefault();
         console.log(this.state.customer_po);
         const requestOptions = {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -67,7 +73,7 @@ class OrderCreator extends Component {
             }
         }
         requestOptions.body = JSON.stringify(requestOptions.body);
-        fetch('/api/order', requestOptions)
+        fetch('/api/order/' + this.state.old_order_no, requestOptions)
             .then(response => {
                 if (response.ok) {
                     e.target.reset();
@@ -88,7 +94,7 @@ class OrderCreator extends Component {
         const { order_no, order_date, credit_period, picked, location, stock_reserve, customer_po, quote_ref, customer_ref } = this.state
         return (
             <Card className='m-4' >
-                <Card.Title className='mt-4'>Add New Order</Card.Title>
+                <Card.Title className='mt-4'>Edit Order</Card.Title>
                 <Card.Body className="d-flex flex-row justify-content-center">
                     <OrderForm
                         order_no={order_no}
