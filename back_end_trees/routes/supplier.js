@@ -7,25 +7,25 @@ router.use(function (req, res, next) {
   next()
 })
 
-// Returns all customers with their phone numbers comma seperated
+// Returns all suppliers with their phone numbers comma seperated
 router.get('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = "Err: GET /api/customer -";
+  let e_msg = "Err: GET /api/supplier -";
   db_pool.getConnection()
     .then(conn => {
       conn.query(`
-        SELECT c.*, GROUP_CONCAT(cp.phone_number) AS phone_numbers 
-        FROM Customer c
-        LEFT JOIN Customer_Phone cp ON
-          c.customer_ref = cp.customer_ref
-        GROUP BY c.customer_ref
+        SELECT s.*, GROUP_CONCAT(sp.phone_number) AS phone_numbers 
+        FROM Supplier s
+        LEFT JOIN Supplier_Phone sp ON
+          s.supplier_code = sp.supplier_code
+        GROUP BY s.supplier_code
         `)
         .then(rows => {
           conn.end();
           res.send(rows);
         })
         .catch(err => {
-          util.handle_sql_error(`getting customers`, e_msg, 500, err, res, conn);
+          util.handle_sql_error(`getting suppliers`, e_msg, 500, err, res, conn);
         })
       })
       .catch(err => {
@@ -33,36 +33,43 @@ router.get('/', function (req, res) {
       })
 })
 
-// Add a new customer, with phone numbers, using a transaction in case either insertion fails
-router.post('/', async function (req, res) {
+// For a given supplier, return their details and all of their products
+router.get('/:supplier_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = "Err: POST /api/customer -";
-  let c = req.body
+  let e_msg = `Err: GET /api/supplier/${req.params.supplier_code} -`;
+
+  // do stuff
+})
+
+// Add a new supplier, with phone numbers, using a transaction in case either insertion fails
+router.post('/', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = "Err: POST /api/supplier -";
+  let s = req.body
   db_pool.getConnection()
     .then(conn => {
       conn.beginTransaction()
         .then(() => {
           conn.query(`
-            INSERT INTO Customer (customer_ref, firstname, surname,
-            email, company, address_number, address_street, address_town,
-            address_postcode) 
-            VALUES(?,?,?,?,?,?,?,?,?)
-          `, [c.customer_ref,c.firstname,c.surname,c.email,c.company,c.address_number,c.address_street,c.address_town,c.address_postcode])
+            INSERT INTO Supplier (supplier_code, company_name, address_number,
+            address_street, address_town, address_postcode, email)
+            VALUES(?,?,?,?,?,?,?)
+          `, [s.supplier_code, s.company_name, s.address_number, s.address_street, s.address_town, s.address_postcode, s.email])
             .then(() => {
               conn.batch(`
-              INSERT INTO Customer_Phone (customer_ref, phone_number) VALUES (?, ?)
-              `, c.phone_numbers)
+              INSERT INTO Supplier_Phone (supplier_code, phone_number) VALUES (?, ?)
+              `, s.phone_numbers)
                 .then(() => {
                   conn.commit();
                   conn.end();
-                  res.json(c);
+                  res.json(s);
                 })
                 .catch((err) => {
-                  util.handle_sql_error(`adding customer, phone number insertsion failed`, e_msg, 500, err, res, conn);
+                  util.handle_sql_error(`adding supplier, phone number insertsion failed`, e_msg, 500, err, res, conn);
                 })
             })
             .catch((err) => {
-              util.handle_sql_error(`adding customer`, e_msg, 500, err, res, conn);
+              util.handle_sql_error(`adding supplier`, e_msg, 500, err, res, conn);
             })
       })
       .catch((err) => {
@@ -74,27 +81,28 @@ router.post('/', async function (req, res) {
   })
 })
 
-// update every field in the Customers table to the given json
+// update every field in the Supplier table to the given json
 // also update phone numbers
-router.put('/:old_customer_ref', function (req, res) {
+router.put('/:old_supplier_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let c = req.body;
-  let e_msg = "Err: PUT /api/customer -";
+  let e_msg = `Err: PUT /api/supplier/${req.params.old_supplier_code} -`;
   db_pool.getConnection()
     .then(conn => {
       conn.beginTransaction()
         .then(() => {
           conn.query(`
-            UPDATE Customer SET customer_ref = ?, firstname = ?, surname = ?, email = ?, company = ?, address_number = ?, address_street = ?, address_town = ?, address_postcode = ?
-            WHERE customer_ref = ?
-          `, [c.customer_ref, c.firstname,c.surname,c.email,c.company,c.address_number,c.address_street,c.address_town,c.address_postcode,req.params.old_customer_ref])
+            UPDATE Supplier SET supplier_code=?, company_name=?, address_number=?,
+            address_street=?, address_town=?, address_postcode=?, email=?
+            WHERE supplier_code = ?
+          `, [s.supplier_code, s.company_name, s.address_number, s.address_street, s.address_town, s.address_postcode, s.email, req.params.old_supplier_code])
             .then((rows) => {
               if (rows.affectedRows > 0) {
-                conn.query(`DELETE FROM Customer_Phone WHERE customer_ref = ?`, [req.params.old_customer_ref])
+                conn.query(`DELETE FROM Supplier_Phone WHERE supplier_code = ?`, [req.params.old_supplier_code])
                   .then(() => {
                     conn.batch(`
-                    INSERT INTO Customer_Phone (customer_ref, phone_number) VALUES (?, ?)
-                    `, c.phone_numbers)
+                    INSERT INTO Supplier_Phone (supplier_code, phone_number) VALUES (?, ?)
+                    `, s.phone_numbers)
                       .then(() => {
                         conn.commit()
                           .then(() => {
@@ -113,11 +121,11 @@ router.put('/:old_customer_ref', function (req, res) {
                     util.handle_sql_error(`deleting old phone numbers`, e_msg, 500, err, res, conn);
                   })
               } else {
-                  util.handle_sql_error(`updating customer ${req.params.old_customer_ref}, customer doesn't exist`, e_msg, 404, err, res, conn);
+                  util.handle_sql_error(`updating supplier ${req.params.old_supplier_code}, supplier doesn't exist`, e_msg, 404, err, res, conn);
               }
             })
             .catch((err) => {
-              util.handle_sql_error(`updating customer`, e_msg, 500, err, res, conn);
+              util.handle_sql_error(`updating supplier`, e_msg, 500, err, res, conn);
             })
         })
         .catch((err) => {
@@ -130,25 +138,25 @@ router.put('/:old_customer_ref', function (req, res) {
 })
 
 // remove a customer from the database (cascade delete of orders etc?)
-router.delete('/:customer_ref', function (req, res) {
+router.delete('/:supplier_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = `Err: DELETE /api/customer/${req.parans.customer_ref} -`;
+  let e_msg = `Err: DELETE /api/supplier/${req.parans.supplier_code} -`;
 
   db_pool.getConnection()
     .then(conn => {
       conn.query(`
-        DELETE FROM Customer WHERE customer_ref = ?
-        `, [req.params.customer_ref])
+        DELETE FROM Supplier WHERE supplier_code = ?
+        `, [req.params.supplier_code])
         .then((rows) => {
           conn.end();
           if (rows.affectedRows < 1) {
-            util.handle_sql_error(`customer ${req.params.customer_ref} does not exist`, e_msg, 404, err, res, conn);
+            util.handle_sql_error(`supplier ${req.params.supplier_code} does not exist`, e_msg, 404, err, res, conn);
           } else {
             res.send("")
           }
         })
         .catch((err) => {
-          util.handle_sql_error(`deleting customer`, e_msg, 500, err, res, conn);
+          util.handle_sql_error(`deleting supplier`, e_msg, 500, err, res, conn);
         })
     })
     .catch((err) => {

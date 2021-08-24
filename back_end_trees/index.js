@@ -30,6 +30,9 @@ app.use('/api/quote', quote_routes)
 const invoice_routes = require('./routes/invoice')
 app.use('/api/invoice', invoice_routes)
 
+const supplier_routes = require('./routes/supplier')
+app.use('/api/supplier', supplier_routes)
+
 app.get('/', (_, res) => {
   res.send("ping")
 })
