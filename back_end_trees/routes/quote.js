@@ -38,7 +38,7 @@ router.get('/:quote_ref', function (req, res) {
         res.send(rows);
       }
     }).catch(err => {
-      util.handle_sql_error('getting all quotes', e_msg, 500, err, res, conn);
+      util.handle_sql_error('getting quote', e_msg, 500, err, res, conn);
     })
   }).catch(err => {
       util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
@@ -48,7 +48,7 @@ router.get('/:quote_ref', function (req, res) {
 // POST new quote
 router.post('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = "Err: GET /api/quote -";
+  let e_msg = "Err: POST /api/quote -";
   let q = req.body;
 
   db_pool.getConnection().then(conn => {

@@ -23,15 +23,18 @@ app.use('/api/customer', customer_routes)
 
 const orders_routes = require('./routes/orders')
 app.use('/api/order', orders_routes)
-
 const quote_routes = require('./routes/quote')
 app.use('/api/quote', quote_routes)
-
 const invoice_routes = require('./routes/invoice')
 app.use('/api/invoice', invoice_routes)
-
 const supplier_routes = require('./routes/supplier')
 app.use('/api/supplier', supplier_routes)
+const product_routes = require('./routes/product')
+app.use('/api/product', product_routes)
+const prices_routes = require('./routes/prices')
+app.use('/api/price', prices_routes)
+const species_routes = require('./routes/species')
+app.use('/api/species', species_routes)
 
 app.get('/', (_, res) => {
   res.send("ping")
