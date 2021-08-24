@@ -109,7 +109,7 @@ router.post('/', function (req, res) {
   let e_msg = "Err: POST /api/order -";
   db_pool.getConnection().then(conn => {
     conn.query(`
-      INSERT INTO Orders (order_no, order_date, credit_period, picked, location, stock_reserve, Customer_PO, quote_ref, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)`, [o.order_no,o.order_date,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref]).then(() => {
+      INSERT INTO Orders (order_no, order_date, credit_period, picked, location, stock_reserve, customer_po, quote_ref, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)`, [o.order_no,o.order_date,o.credit_period,o.picked,o.location,o.stock_reserve,o.customer_po,o.quote_ref,o.customer_ref]).then(() => {
         conn.close();
         res.send(o);
       }).catch(err => {
@@ -129,12 +129,9 @@ router.put('/:old_order_no', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.query(`
       UPDATE taynuilttrees.Orders o
-      SET o.picked=?,o.credit_period=?,o.Customer_PO=?,o.order_no=?,o.customer_ref=?,o.order_date=?,o.location=?,o.quote_ref=?,o.stock_reserve=?
+      SET o.picked=?,o.credit_period=?,o.customer_po=?,o.order_no=?,o.customer_ref=?,o.order_date=?,o.location=?,o.quote_ref=?,o.stock_reserve=?
       WHERE o.order_no=?
-      LIMIT 1
-
-      `, //[o.order_no,o.order_date,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref,req.params.old_order_no]).then(rows => {
-      [o.picked,o.credit_period,o.Customer_PO,o.order_no,o.customer_ref,o.order_date,o.location,o.quote_ref,o.stock_reserve,req.params.old_order_no]).then(rows => {
+      `, [o.picked,o.credit_period,o.customer_po,o.order_no,o.customer_ref,o.order_date,o.location,o.quote_ref,o.stock_reserve,req.params.old_order_no]).then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error(`editing order ${req.params.old_order_no}, doesn't exist`, e_msg, 404, err, res, conn);
         } else {
