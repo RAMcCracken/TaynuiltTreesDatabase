@@ -85,7 +85,7 @@ router.post('/', function (req, res) {
 // also update phone numbers
 router.put('/:old_supplier_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let c = req.body;
+  let s = req.body;
   let e_msg = `Err: PUT /api/supplier/${req.params.old_supplier_code} -`;
   db_pool.getConnection()
     .then(conn => {
@@ -107,7 +107,7 @@ router.put('/:old_supplier_code', function (req, res) {
                         conn.commit()
                           .then(() => {
                             conn.end();
-                            res.json(c);
+                            res.json(s);
                           })
                           .catch((err) => {
                             util.handle_sql_error(`failed to commit transaction, no changes made`, e_msg, 500, err, res, conn);
@@ -140,7 +140,7 @@ router.put('/:old_supplier_code', function (req, res) {
 // remove a customer from the database (cascade delete of orders etc?)
 router.delete('/:supplier_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = `Err: DELETE /api/supplier/${req.parans.supplier_code} -`;
+  let e_msg = `Err: DELETE /api/supplier/${req.params.supplier_code} -`;
 
   db_pool.getConnection()
     .then(conn => {
@@ -148,10 +148,10 @@ router.delete('/:supplier_code', function (req, res) {
         DELETE FROM Supplier WHERE supplier_code = ?
         `, [req.params.supplier_code])
         .then((rows) => {
-          conn.end();
           if (rows.affectedRows < 1) {
-            util.handle_sql_error(`supplier ${req.params.supplier_code} does not exist`, e_msg, 404, err, res, conn);
+            util.handle_sql_error(`supplier ${req.params.supplier_code} does not exist`, e_msg, 404, "none", res, conn);
           } else {
+            conn.end();
             res.send("")
           }
         })
