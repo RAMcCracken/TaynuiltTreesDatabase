@@ -170,5 +170,27 @@ router.put('/:old_invoice_no/product/:old_product_code', function (req, res) {
   })
 })
 
+// DELETE invoice product
+router.delete('/:invoice_no/product/:product_code', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: DELETE /api/invoice/${req.params.invoice_no}/product/${req.params.product_code} -`;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      DELETE FROM Invoice_Products WHERE invoice_no=? AND product_code=?
+      `,[req.params.invoice_no,req.params.product_code]).then(rows => {
+        if (rows.affectedRows !== 1) {
+          util.handle_sql_error(`deleting invoice product ${req.params.invoice_no}/${req.params.product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
+        } else {
+          conn.end();
+          res.send("");
+        }
+      }).catch(err => {
+        util.handle_sql_error('deleting invoice product', e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+  })
+})
 // export to main js file
 module.exports = router
