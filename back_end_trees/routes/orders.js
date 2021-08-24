@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const util = require('../utilities');
 
 // Middleware if we had any.
 router.use(function (req, res, next) {
@@ -20,15 +21,11 @@ router.get('/', function (req, res) {
           res.send(rows);
         })
         .catch(err => {
-          conn.end();
-          console.log(`${e_msg} getting orders\n${err}`)
-          res.status(500).send(`${e_msg} getting orders\n${err}`)
+          util.handle_sql_error('getting orders', e_msg, 500, err, res, conn);
         })
       })
       .catch(err => {
-            conn.end();
-            console.log(`${e_msg} getting connection from pool\n${err}`)
-            res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+          util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
       })
 })
 
@@ -79,9 +76,7 @@ router.get('/:order_no', function (req, res) {
                           return invoice
                         })
                         .catch(err => {
-                          conn.end();
-                          console.log(`${e_msg} getting invoice ass products\n${err}`)
-                          res.status(500).send(`${e_msg} getting invoice ass products\n${err}`)
+                          util.handle_sql_error('getting invoice ass products', e_msg, 500, err, res, conn);
                         })
                     })
                     // map returns an array of promises that we have to resolve
@@ -90,28 +85,20 @@ router.get('/:order_no', function (req, res) {
                       conn.end();
                       res.send(order)
                     }).catch((err) => {
-                      conn.end();
-                      console.log(`${e_msg} resolving nested invoice products\n${err}`)
-                      res.status(500).send(`${e_msg} resolving invoice products\n${err}`)
+                      util.handle_sql_error('resolving nested invoice products', e_msg, 500, err, res, conn);
                     })
                   })
               })
               .catch(err => {
-                conn.end();
-                console.log(`${e_msg} getting invoices\n${err}`)
-                res.status(500).send(`${e_msg} getting invoices\n${err}`)
+                util.handle_sql_error('getting invoices', e_msg, 500, err, res, conn);
               })
           })
         .catch(err => {
-          conn.end();
-          console.log(`${e_msg} getting orders\n${err}`)
-          res.status(500).send(`${e_msg} getting orders\n${err}`)
+          util.handle_sql_error('getting orders', e_msg, 500, err, res, conn);
         })
       })
       .catch(err => {
-            conn.end();
-            console.log(`${e_msg} getting connection from pool\n${err}`)
-            res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+            util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
       })
 })
 
@@ -126,14 +113,10 @@ router.post('/', function (req, res) {
         conn.close();
         res.send(o);
       }).catch(err => {
-        conn.end();
-        console.log(`${e_msg} adding order\n${err}`)
-        res.status(500).send(`${e_msg} adding order\n${err}`)
+          util.handle_sql_error('adding order', e_msg, 500, err, res, conn);
       })
   }).catch(err => {
-    conn.end();
-    console.log(`${e_msg} getting connection from pool\n${err}`)
-    res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+      util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
   });
 })
 
@@ -153,24 +136,16 @@ router.put('/:old_order_no', function (req, res) {
       `, //[o.order_no,o.order_date,o.credit_period,o.picked,o.location,o.stock_reserve,o.Customer_PO,o.quote_ref,o.customer_ref,req.params.old_order_no]).then(rows => {
       [o.picked,o.credit_period,o.Customer_PO,o.order_no,o.customer_ref,o.order_date,o.location,o.quote_ref,o.stock_reserve,req.params.old_order_no]).then(rows => {
         if (rows.affectedRows !== 1) {
-          conn.end();
-          console.log(rows)
-          console.log(`${e_msg} editing order ${req.params.old_order_no}, doesn't exist`)
-          console.log(rows.affectedRows)
-          res.status(404).send(`${e_msg} editing order ${req.params.old_order_no}, doesn't exist`)
+          util.handle_sql_error(`editing order ${req.params.old_order_no}, doesn't exist`, e_msg, 404, err, res, conn);
         } else {
           conn.close();
           res.send(o);
         }
       }).catch(err => {
-        conn.end();
-        console.log(`${e_msg} editing order\n${err}`)
-        res.status(500).send(`${e_msg} editing order\n${err}`)
+          util.handle_sql_error(`editing order`, e_msg, 500, err, res, conn);
       })
   }).catch(err => {
-    conn.end();
-    console.log(`${e_msg} getting connection from pool\n${err}`)
-    res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
   });
 })
 
@@ -183,22 +158,16 @@ router.delete('/:order_no', function (req, res) {
       DELETE FROM Orders WHERE order_no = ?
       `, [req.params.order_no]).then((rows) => {
         if (rows.affectedRows !== 1) {
-          conn.end();
-          console.log(`${e_msg} deleting order, doesn't exist`)
-          res.status(500).send(`${e_msg} deleting order, doesn't exist`)
+          util.handle_sql_error(`deleting order ${req.params.order_no}, doesn't exist`, e_msg, 404, err, res, conn);
         } else {
           conn.close();
           res.send("");
         }
       }).catch(err => {
-        conn.end();
-        console.log(`${e_msg} editing order\n${err}`)
-        res.status(500).send(`${e_msg} editing order\n${err}`)
+          util.handle_sql_error(`deleting order`, e_msg, 500, err, res, conn);
       })
   }).catch(err => {
-    conn.end();
-    console.log(`${e_msg} getting connection from pool\n${err}`)
-    res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
   });
 })
 
@@ -221,28 +190,17 @@ router.put('/:order_no/product', function (req, res) {
               conn.end();
               res.send(`Added ${rows.affectedRows} products to database`);
             }).catch(err => {
-              conn.rollback();
-              conn.end();
-              console.log(`${e_msg}  adding order productsl\n${err}`)
-              res.status(500).send(`${e_msg}  adding order productsl\n${err}`)
+                util.handle_sql_error(`adding order products`, e_msg, 500, err, res, conn);
             })
         }).catch(err => {
-          conn.rollback();
-          conn.end();
-          console.log(`${e_msg} deleting existing order productsl\n${err}`)
-          res.status(500).send(`${e_msg} deleting existing order productsl\n${err}`)
+            util.handle_sql_error(`deleting existing order products`, e_msg, 500, err, res, conn);
         })
     }).catch(err => {
-      conn.end();
-      console.log(`${e_msg} starting transactionl\n${err}`)
-      res.status(500).send(`${e_msg} starting transactionl\n${err}`)
+        util.handle_sql_error(`starting transaction`, e_msg, 500, err, res, conn);
     })
   }).catch(err => {
-    conn.end();
-    console.log(`${e_msg} getting connection from pool\n${err}`)
-    res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
   })
-
 })
 
 // export to main js file

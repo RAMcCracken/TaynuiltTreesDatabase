@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const util = require('../utilities');
 
 // Middleware if we had any.
 router.use(function (req, res, next) {
@@ -19,14 +20,10 @@ router.post('/', function (req, res) {
         conn.end();
         res.send(i);
       }).catch(err => {
-        conn.end();
-        console.log(`${e_msg} adding invoice\n${err}`)
-        res.status(500).send(`${e_msg} adding invoice\n${err}`)
+        util.handle_sql_error('adding invoice', e_msg, 500, err, res, conn);
       })
   }).catch(err => {
-    conn.end();
-    console.log(`${e_msg} getting connection from pool\n${err}`)
-    res.status(500).send(`${e_msg} getting connection from pool\n${err}`)
+    util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
   })
 })
 
