@@ -196,7 +196,28 @@ router.delete('/:order_no', function (req, res) {
   });
 })
 
-// Add / Edit an orders order products via transaction deleting
+router.post(`/:order_no/product`, function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: POST /api/order/${req.params.order_no}/product -`;
+  let op = req.body;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      INSERT INTO Order_Products (order_no, product_code, bags, quantity)
+      VALUES (?,?,?,?)
+      `, [op.order_no,op.product_code,op.bags,op.quantity]).then(() => {
+        conn.end();
+        res.send("");
+      }).catch(err => {
+          util.handle_sql_error(`adding invoice product`, e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+  })
+})
+
+// TODO change this to match invoice
+// Edit an orders order products via transaction deleting
 // them all, then adding in the ones given.
 // expects => [[order_no,product_code,bags,quantity]]
 router.put('/:order_no/product/:old_product_code', function (req, res) {
