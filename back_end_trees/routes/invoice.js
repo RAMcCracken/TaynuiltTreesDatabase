@@ -7,6 +7,54 @@ router.use(function (req, res, next) {
   next()
 })
 
+// GET all invoices
+router.get('/', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = "Err: GET /api/invoice -";
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT * FROM Invoice
+        `)
+        .then(rows => {
+          conn.end();
+          res.send(rows);
+        })
+        .catch(err => {
+          util.handle_sql_error('getting invoices', e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+          util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+      })
+})
+
+// GET single invoice
+router.get('/:invoice_no', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: GET /api/invoice/${req.params.invoice_no} -`;
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT * FROM Invoice WHERE invoice_no=?
+        `,[req.params.invoice_no])
+        .then(rows => {
+          if (rows.length !== 1) {
+            util.handle_sql_error(`getting invoice ${req.params.invoice_no}, doesn't exist`, e_msg, 404, "none", res, conn);
+          } else {
+            conn.end();
+            res.send(rows);
+          }
+        })
+        .catch(err => {
+          util.handle_sql_error(`getting invoice ${req.params.invoice_no}`, e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+          util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+      })
+})
+
 // POST new invoice
 router.post('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
