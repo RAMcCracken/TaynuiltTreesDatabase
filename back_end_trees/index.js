@@ -16,11 +16,8 @@ app.set('db_pool', db_pool)
 
 app.use(express.json())
 
-// with this, all queries that begin with /api/customer/foo
-// to go the customer.js file, where it will see the query as /foo
 const customer_routes = require('./routes/customer')
 app.use('/api/customer', customer_routes)
-
 const orders_routes = require('./routes/orders')
 app.use('/api/order', orders_routes)
 const quote_routes = require('./routes/quote')

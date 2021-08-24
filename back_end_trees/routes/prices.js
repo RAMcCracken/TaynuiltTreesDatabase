@@ -35,7 +35,7 @@ router.get('/:price_code', function (req, res) {
         util.handle_sql_error(`getting price ${req.params.price_code}, doesn't exist`, e_msg, 404, "none", res, conn);
       } else {
         conn.end();
-        res.send(rows);
+        res.send(rows[0]);
       }
     }).catch(err => {
       util.handle_sql_error('single price', e_msg, 500, err, res, conn);

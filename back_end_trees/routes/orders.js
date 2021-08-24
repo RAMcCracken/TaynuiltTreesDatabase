@@ -43,7 +43,7 @@ router.get('/:order_no', function (req, res) {
             util.handle_sql_error(`getting order ${req.params.order_no}, doesn't exist`, e_msg, 404, "none", res, conn);
           } else {
             conn.end();
-            res.send(rows);
+            res.send(rows[0]);
           }
         })
         .catch(err => {
@@ -207,7 +207,7 @@ router.post(`/:order_no/product`, function (req, res) {
       VALUES (?,?,?,?)
       `, [op.order_no,op.product_code,op.bags,op.quantity]).then(() => {
         conn.end();
-        res.send("");
+        res.send(op);
       }).catch(err => {
           util.handle_sql_error(`adding invoice product`, e_msg, 500, err, res, conn);
       })

@@ -53,7 +53,7 @@ router.get('/:supplier_code', function (req, res) {
             util.handle_sql_error(`getting supplier ${req.params.supplier_code}, doesn't exist`, e_msg, 404, "none", res, conn);
           } else {
             conn.end();
-            res.send(rows);
+            res.send(rows[0]);
           }
         })
         .catch(err => {
@@ -89,7 +89,7 @@ router.get('/:supplier_code/detailed', function (req, res) {
               SELECT * FROM Product WHERE supplier_code = ?
               `,[req.params.supplier_code]).then(products => {
                 conn.end();
-                res.json({supplier:supplier, products:products});
+                res.json({supplier:supplier[0], products:products});
               }).catch(err => {
                 util.handle_sql_error(`getting supplier's products`, e_msg, 500, err, res, conn);
               })

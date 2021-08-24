@@ -35,7 +35,7 @@ router.get('/:quote_ref', function (req, res) {
         util.handle_sql_error(`getting quote ${req.params.quote_ref}, doesn't exist`, e_msg, 404, "none", res, conn);
       } else {
         conn.end();
-        res.send(rows);
+        res.send(rows[0]);
       }
     }).catch(err => {
       util.handle_sql_error('getting quote', e_msg, 500, err, res, conn);
@@ -83,7 +83,7 @@ router.put('/:old_quote_ref', function (req, res) {
           util.handle_sql_error(`updating quote ${req.params.old_quote_ref}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
           conn.end();
-          res.send("");
+          res.send(q);
         }
       }).catch(err => {
         util.handle_sql_error('updating quote', e_msg, 500, err, res, conn);
