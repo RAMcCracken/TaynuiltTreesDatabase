@@ -56,7 +56,15 @@ class OrderCreator extends Component {
     handleSubmit = e => {
         e.preventDefault();
         console.log(this.formatDate(this.state.order_date));
-
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: {
+            }
+        }
+        requestOptions.body = JSON.stringify(requestOptions.body);
     }
 
     render() {

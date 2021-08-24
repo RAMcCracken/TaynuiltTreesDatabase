@@ -8,13 +8,19 @@ class CustomerEditor extends Component {
         super(props)
         const data = this.props.location && this.props.location.state ?
             this.props.location.state.data : null
-        const phones = data.phone_numbers.split(",");
-        const phone_ids = phones.map((phone, i) => {
-            const id = i + 1
-            return { id, number: phone }
-        })
+
+        let phones
+        let phone_ids = null
+        if (data.phone_numbers) {
+            phones = data.phone_numbers.split(",");
+            phone_ids = phones.map((phone, i) => {
+                const id = i + 1
+                return { id, number: phone }
+            })
+        }
+
         this.state = {
-            phoneFields: data ? phone_ids : [{ id: 1, number: "" }],
+            phoneFields: phone_ids ? phone_ids : [{ id: 1, number: "" }],
             old_custref: data ? data.customer_ref : "",
             custref: data ? data.customer_ref : "",
             firstname: data ? data.firstname : "",
