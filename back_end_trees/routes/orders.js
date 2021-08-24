@@ -171,30 +171,27 @@ router.delete('/:order_no', function (req, res) {
 // Add / Edit an orders order products via transaction deleting
 // them all, then adding in the ones given.
 // expects => [[order_no,product_code,bags,quantity]]
-router.put('/:order_no/product', function (req, res) {
+router.put('/:order_no/product/:old_product_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = `Err: PUT /api/order/${req.params.order_no}/product -`;
+  let e_msg = `Err: PUT /api/order/${req.params.old_order_no}/product/${req.params.old_product_code} -`;
+  let o = req.body;
 
   db_pool.getConnection().then(conn => {
-    conn.beginTransaction().then(() => {
-      conn.query(`
-        DELETE FROM Order_Products WHERE order_no = ?
-        `, [req.params.order_no]).then(() => {
-          conn.batch(`
-           INSERT INTO Order_Products (order_no, product_code, bags, quantity) VALUES (?,?,?,?)  
-            `, req.body.order_prod).then(rows => {
-              conn.commit();
-              conn.end();
-              res.send(`Added ${rows.affectedRows} products to database`);
-            }).catch(err => {
-                util.handle_sql_error(`adding order products`, e_msg, 500, err, res, conn);
-            })
-        }).catch(err => {
-            util.handle_sql_error(`deleting existing order products`, e_msg, 500, err, res, conn);
-        })
-    }).catch(err => {
-        util.handle_sql_error(`starting transaction`, e_msg, 500, err, res, conn);
-    })
+    conn.query(`
+      UPDATE Order_Products SET invoice_no=?,product_code=?,bags=?,quantity=?
+      WHERE invoice_no=? AND product_code=?
+      `,[o.invoice_no,o.product_code,o.bags,o.quantity,req.params.old_order_no,req.params.old_product_code])
+      .then(rows => {
+        if (rows.affectedRows !== 1) {
+          util.handle_sql_error(`updating order product ${req.params.old_order_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, err, res, conn);
+        } else {
+          conn.end();
+          res.send(i);
+        }
+      })
+      .catch(err => {
+        util.handle_sql_error(`updating order product`, e_msg, 500, err, res, conn);
+      })
   }).catch(err => {
       util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
   })

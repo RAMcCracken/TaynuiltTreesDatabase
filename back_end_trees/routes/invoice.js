@@ -55,12 +55,50 @@ router.put('/:invoice_no', function (req, res) {
 router.put('/:invoice_no', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let e_msg = `Err: DELETE /api/invoice/${req.params.invoice_no} -`;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      DELETE FROM Invoice WHERE invoice_no = ?
+      `, [req.params.invoice_no]).then((rows) => {
+        if (rows.affectedRows !== 1) {
+          util.handle_sql_error(`deleting invoice ${req.params.invoice_no}, doesn't exist`, e_msg, 404, err, res, conn);
+        } else {
+          conn.close();
+          res.send("");
+        }
+      }).catch(err => {
+          util.handle_sql_error(`deleting invoice`, e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+  });
 })
 
-// PUT invoice_products
-router.put('/:invoice_no/product', function (req, res) {
+// PUT update an invoice product
+router.put('/:old_invoice_no/product/:old_product_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
-  let e_msg = `Err: DELETE /api/invoice/${req.params.invoice_no}/product -`;
+  let e_msg = `Err: PUT /api/invoice/${req.params.old_invoice_no}/product/${req.params.old_product_code} -`;
+  let i = req.body;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      UPDATE Invoice_Products SET invoice_no=?,product_code=?,bags=?,quantity=?
+      WHERE invoice_no=? AND product_code=?
+      `,[i.invoice_no,i.product_code,i.bags,i.quantity,req.params.old_invoice_no,req.params.old_product_code])
+      .then(rows => {
+        if (rows.affectedRows !== 1) {
+          util.handle_sql_error(`updating invoice product ${req.params.old_invoice_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, err, res, conn);
+        } else {
+          conn.end();
+          res.send(i);
+        }
+      })
+      .catch(err => {
+        util.handle_sql_error(`updating invoice product`, e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+  })
 })
 
 // export to main js file
