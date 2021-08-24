@@ -22,7 +22,7 @@ const customer_routes = require('./routes/customer')
 app.use('/api/customer', customer_routes)
 
 const orders_routes = require('./routes/orders')
-app.use('/api/orders', orders_routes)
+app.use('/api/order', orders_routes)
 
 const quote_routes = require('./routes/quote')
 app.use('/api/quote', quote_routes)
