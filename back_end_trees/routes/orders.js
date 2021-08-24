@@ -29,20 +29,48 @@ router.get('/', function (req, res) {
       })
 })
 
+// GET single order
+router.get('/:order_no', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: GET /api/order/${req.params.order_no} -`;
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT * FROM Orders WHERE order_no=?
+        `,[req.params.order_no])
+        .then(rows => {
+          if (rows.length !== 1) {
+            util.handle_sql_error(`getting order ${req.params.order_no}, doesn't exist`, e_msg, 404, "none", res, conn);
+          } else {
+            conn.end();
+            res.send(rows);
+          }
+        })
+        .catch(err => {
+          util.handle_sql_error(`getting order ${req.params.order_no}`, e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+          util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+      })
+})
+
 // GET a order by :order_ref.
 // Return all ass order_products, invoices, and each invoices ass products.
 // order: {order_products: [], invoices: [data: foo, invoice_products: []]}
-router.get('/:order_no', function (req, res) {
+router.get('/:order_no/detailed', function (req, res) {
   let order_no = req.params.order_no;
   let db_pool = req.app.get('db_pool');
-  let e_msg = `Err: GET /api/order/${order_no} -`;
+  let e_msg = `Err: GET /api/order/${order_no}/detailed -`;
   db_pool.getConnection()
     .then(conn => {
       conn.query(`
         SELECT * FROM Orders WHERE order_no = ?
         `, [order_no])
         .then(rows => {
-          // orders: {order: {foo}}
+          if (rows.length !== 1) {
+            throw "order not found"
+          } 
           delete rows.meta;
           order = {order: rows[0]}
         })

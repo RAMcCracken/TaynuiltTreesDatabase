@@ -47,8 +47,12 @@ router.get('/:customer_ref', function (req, res) {
         WHERE c.customer_ref = ?
         `,[req.params.customer_ref])
         .then(rows => {
-          conn.end();
-          res.send(rows);
+          if (rows.length !== 1) {
+            util.handle_sql_error(`getting customer ${req.params.customer_ref}, doesn't exist`, e_msg, 404, "none", res, conn);
+          } else {
+            conn.end();
+            res.send(rows);
+          }
         })
         .catch(err => {
           util.handle_sql_error(`getting customer ${req.params.customer_ref}`, e_msg, 500, err, res, conn);
