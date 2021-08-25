@@ -116,4 +116,74 @@ router.delete('/:quote_ref', function (req, res) {
   })
 })
 
+// POST an quote product
+router.post(`/:quote_no/product`, function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: POST /api/quote/${req.params.quote_no}/product -`;
+  let q = req.body;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      INSERT INTO Quote_Products (quote_no, product_code, bags, quantity)
+      VALUES (?,?,?,?)
+      `, [q.quote_ref,q.product_code,q.bags,q.quantity,]).then(() => {
+        conn.end();
+        res.send(i);
+      }).catch(err => {
+          util.handle_sql_error(`adding quote product`, e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+  })
+})
+
+// PUT update an quote product
+router.put('/:old_quote_no/product/:old_product_code', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: PUT /api/quote/${req.params.old_quote_no}/product/${req.params.old_product_code} -`;
+  let i = req.body;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      UPDATE Quote_Products SET quote_no=?,product_code=?,bags=?,quantity=?
+      WHERE quote_no=? AND product_code=?
+      `,[i.quote_no,i.product_code,i.bags,i.quantity,req.params.old_quote_no,req.params.old_product_code])
+      .then(rows => {
+        if (rows.affectedRows !== 1) {
+          util.handle_sql_error(`updating quote product ${req.params.old_quote_no}/${req.params.old_product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
+        } else {
+          conn.end();
+          res.send(i);
+        }
+      })
+      .catch(err => {
+        util.handle_sql_error(`updating quote product`, e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+  })
+})
+
+// DELETE quote product
+router.delete('/:quote_no/product/:product_code', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: DELETE /api/quote/${req.params.quote_no}/product/${req.params.product_code} -`;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      DELETE FROM Quote_Products WHERE quote_no=? AND product_code=?
+      `,[req.params.quote_no,req.params.product_code]).then(rows => {
+        if (rows.affectedRows !== 1) {
+          util.handle_sql_error(`deleting quote product ${req.params.quote_no}/${req.params.product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
+        } else {
+          conn.end();
+          res.send("");
+        }
+      }).catch(err => {
+        util.handle_sql_error('deleting quote product', e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+  })
+})
 module.exports = router
