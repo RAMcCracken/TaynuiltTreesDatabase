@@ -46,37 +46,35 @@ router.get('/:quote_ref', function (req, res) {
 })
 
 // GET a detailed quote by :quote_ref.
-// Return all ass quote_products, invoices, and each invoices ass products.
-// order: {order_products: [], invoices: [data: foo, invoice_products: []]}
-router.get('/:order_no/detailed', function (req, res) {
-  let order_no = req.params.order_no;
+// Return all ass_quote_products
+router.get('/:quote_ref/detailed', function (req, res) {
+  let quote_ref = req.params.quote_ref;
   let db_pool = req.app.get('db_pool');
-  let e_msg = `Err: GET /api/order/${order_no}/detailed -`;
+  let e_msg = `Err: GET /api/quote/${quote_ref}/detailed -`;
   db_pool.getConnection()
     .then(conn => {
       conn.query(`
-        SELECT * FROM Orders WHERE order_no = ?
-        `, [order_no])
+        SELECT * FROM Quote WHERE quote_ref = ?
+        `, [quote_ref])
         .then(rows => {
           if (rows.length !== 1) {
-            throw "order not found"
+            throw "quote not found"
           } 
-          delete rows.meta;
-          order = {order: rows[0]}
+          quote = {quote: rows[0]}
         })
           .then(() => {
-            // get ass order prod
+            // get ass quote prod
             conn.query(`
-              SELECT * FROM Order_Products WHERE order_no = ?
-              `, [order_no])
+              SELECT * FROM Quote_Products WHERE quote_ref = ?
+              `, [quote_ref])
               .then(rows => {
-                // orders: {order: {food}, order_ass_prod: [{foo}]}
-                delete rows.meta;
-                order.order_ass_prod = rows;
+                quote.quote_ass_prod = rows;
+                conn.end();
+                res.send(quote);
               })
           })
         .catch(err => {
-          util.handle_sql_error('getting orders', e_msg, 500, err, res, conn);
+          util.handle_sql_error('getting quotes', e_msg, 500, err, res, conn);
         })
       })
       .catch(err => {
