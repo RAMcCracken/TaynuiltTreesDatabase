@@ -969,7 +969,16 @@ DROP TABLE IF EXISTS `Quote`;
 CREATE TABLE `Quote` (
   `quote_ref` int(11) NOT NULL AUTO_INCREMENT,
   `quote_number` int(11) DEFAULT NULL,
-  PRIMARY KEY (`quote_ref`)
+  `order_date` date DEFAULT NULL,
+  `credit_period` int(11) DEFAULT NULL,
+  `picked` tinyint(1) DEFAULT NULL,
+  `location` varchar(100) DEFAULT NULL,
+  `stock_reserve` tinyint(1) DEFAULT NULL,
+  `customer_po` varchar(100) DEFAULT NULL,
+  `customer_ref` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`quote_ref`),
+  KEY `Quote_FK` (`customer_ref`),
+  CONSTRAINT `Quote_FK` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -979,7 +988,7 @@ CREATE TABLE `Quote` (
 
 LOCK TABLES `Quote` WRITE;
 /*!40000 ALTER TABLE `Quote` DISABLE KEYS */;
-INSERT INTO `Quote` VALUES (1,NULL),(2,NULL);
+INSERT INTO `Quote` VALUES (1,NULL,NULL,NULL,1,NULL,NULL,'123',NULL),(2,NULL,NULL,NULL,0,NULL,NULL,NULL,'a5');
 /*!40000 ALTER TABLE `Quote` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1199,4 +1208,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-25 10:25:33
+-- Dump completed on 2021-08-25 10:53:02
