@@ -5,7 +5,6 @@ import Card from 'react-bootstrap/Card'
 import Table from 'react-bootstrap/Table'
 import { Link } from 'react-router-dom'
 import DeleteConfirmation from '../DeleteConfirmation'
-import { Row, Col } from 'react-bootstrap'
 const util = require('../../Utils')
 
 class QuoteViewer extends Component {
@@ -122,7 +121,7 @@ class QuoteViewer extends Component {
                             {
                                 pathname: "/edit-quote",
                                 state: {
-                                    data: this.state.data ? this.state.data.filter(row => row.quote_ref === this.state.selectedQuote)[0] : ""
+                                    data: this.state.data ? this.state.data.filter(row => row.quote_ref == this.state.selectedQuote)[0] : ""
                                 }
                             }
                         }>
@@ -141,7 +140,7 @@ class QuoteViewer extends Component {
                             Delete
                         </Button>
                         <Button
-                            variant='info'
+                            variant='secondary'
                             className='m-2'
                             disabled={this.state.selectedQuote === ""}
                             href={"/quotes/" + this.state.selectedQuote}>

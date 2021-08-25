@@ -117,7 +117,7 @@ class OrdersViewer extends Component {
                             Delete
                         </Button>
                         <Button
-                            variant='info'
+                            variant='secondary'
                             className='m-2'
                             disabled={this.state.selectedOrderNo === ""}
                             href={"/orders/" + this.state.selectedOrderNo}>

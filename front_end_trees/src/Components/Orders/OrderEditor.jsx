@@ -15,7 +15,6 @@ class OrderCreator extends Component {
         }
 
         this.state = {
-            old_order_no: data ? data.order_no : "",
             order_no: data ? data.order_no : "",
             order_date: data ? date : "",
             credit_period: data ? data.credit_period : 0,
@@ -25,6 +24,7 @@ class OrderCreator extends Component {
             customer_po: data ? data.customer_po : "",
             quote_ref: data ? data.quote_ref : "",
             customer_ref: data ? data.customer_ref : "",
+            error: null,
         }
     }
 
@@ -53,7 +53,7 @@ class OrderCreator extends Component {
     };
 
     handleCancel() {
-        this.props.history.push("/quotes");
+        this.props.history.push("/orders");
     }
 
     handleSubmit = e => {
@@ -77,14 +77,14 @@ class OrderCreator extends Component {
             }
         }
         requestOptions.body = JSON.stringify(requestOptions.body);
-        fetch('/api/order/' + this.state.old_order_no, requestOptions)
+        fetch('/api/order/' + this.state.order_no, requestOptions)
             .then(response => {
                 if (response.ok) {
                     e.target.reset();
                     this.props.history.push("/orders");
                 } else {
                     return response.json().then((error) => {
-                        let err = error.sql_error
+                        let err = error.sql_err
                         throw new Error(err);
                     })
                 }
@@ -95,7 +95,7 @@ class OrderCreator extends Component {
     }
 
     render() {
-        const { order_no, order_date, credit_period, picked, location, stock_reserve, customer_po, quote_ref, customer_ref } = this.state
+        const { order_date, credit_period, picked, location, stock_reserve, customer_po, customer_ref } = this.state
         return (
             <Card className='m-4' >
                 <Card.Title className='m-4'>Edit Order</Card.Title>
@@ -103,14 +103,12 @@ class OrderCreator extends Component {
                 <Card.Body className="d-flex flex-row justify-content-center">
                     <Form className="w-50" onSubmit={this.handleSubmit}>
                         <OrderForm
-                            order_no={order_no}
                             order_date={order_date}
                             credit_period={credit_period}
                             picked={picked}
                             location={location}
                             stock_reserve={stock_reserve}
                             customer_po={customer_po}
-                            quote_ref={quote_ref}
                             customer_ref={customer_ref}
                             handleChange={this.handleChange.bind(this)}
                             handleDateChange={this.handleDateChange.bind(this)}
