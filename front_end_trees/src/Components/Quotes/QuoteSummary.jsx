@@ -3,20 +3,19 @@ import { Card, Row, Col, Container } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form'
 import { ArrowLeft, DashCircle, PlusCircle } from 'react-bootstrap-icons'
 import Button from 'react-bootstrap/Button'
-import Table from 'react-bootstrap/Table'
 import { withRouter } from 'react-router'
-import OrderProductEditor from './OrderProductEditor'
+import OrderProductEditor from '../Orders/OrderProductEditor'
 import DeleteConfirmation from '../DeleteConfirmation'
 const util = require("../../Utils")
 
-class OrderSummary extends Component {
+class QuoteSummary extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            order_no: this.props.match.params.id,
-            order_details: null,
-            order_products: [{ id: 1, product_code: "", quantity: "", bags: "" }],
+            quote_ref: this.props.match.params.id,
+            quote_details: null,
+            quote_products: [{ id: 1, product_code: "", quantity: "", bags: "" }],
             invoices: [],
             selectedInvoice: "",
             disabled: true,
@@ -27,11 +26,11 @@ class OrderSummary extends Component {
     }
 
     componentDidMount() {
-        this.fetchOrderSummary();
+        this.fetchQuoteSummary();
     }
 
-    fetchOrderSummary() {
-        fetch('/api/order/' + this.state.order_no + "/detailed")
+    fetchQuoteSummary() {
+        fetch('/api/quote/' + this.state.quote_ref + "/detailed")
             .then(response => {
                 if (response.ok) {
 
@@ -44,15 +43,15 @@ class OrderSummary extends Component {
             .then(data => {
                 let products
                 let product_ids = null
-                if (data.order_ass_prod) {
-                    products = data.order_ass_prod;
+                if (data.quote_ass_prod) {
+                    products = data.quote_ass_prod;
                     product_ids = products.map((product, i) => {
                         const id = i + 1
                         return { id, product_code: product.product_code, quantity: product.quantity, bags: product.bags }
                     })
                 }
-
-                this.setState({ order_details: data.order, order_products: product_ids, invoices: data.invoices, loading: false, error: null })
+                console.log(data);
+                this.setState({ quote_details: data.quote, quote_products: product_ids, loading: false, error: null })
             })
             .catch(error => {
                 console.log("here");
@@ -60,25 +59,19 @@ class OrderSummary extends Component {
             });
     }
 
-    handleOptionChange = e => {
-        this.setState({
-            selectedInvoice: e.target.value
-        });
-    };
-
     handleChangeProduct = (i, e) => {
-        const values = [...this.state.order_products]
+        const values = [...this.state.quote_products]
         values[i][e.target.name] = e.target.value
-        this.setState({ order_products: values });
+        this.setState({ quote_products: values });
     }
 
     handleAdd = (id) => {
-        this.setState({ order_products: [...this.state.order_products, { id: id + 2, product_code: "", quantity: "", bags: "" }] })
+        this.setState({ quote_products: [...this.state.quote_products, { id: id + 2, product_code: "", quantity: "", bags: "" }] })
     }
 
 
     handleDelete(id) {
-        let product = this.state.order_products.filter(product => product.id === id)[0]
+        let product = this.state.quote_products.filter(product => product.id === id)[0]
 
         const requestOptions = {
             method: 'DELETE',
@@ -87,22 +80,22 @@ class OrderSummary extends Component {
             },
         };
 
-        fetch('/api/order/' + this.state.order_no + "/product/" + product.product_code, requestOptions)
+        fetch('/api/quote/' + this.state.quote_ref + "/product/" + product.product_code, requestOptions)
             .then(response => {
                 if (response.ok) {
-                    const result = this.state.order_products.filter(product => product.id !== id);
-                    this.setState({ order_products: result })
+                    const result = this.state.quote_products.filter(product => product.id !== id);
+                    this.setState({ quote_products: result })
                 }
             })
         this.handleCloseDelete();
     }
 
     handleCancel(i, old_product, old_quant, old_bags) {
-        const values = [...this.state.order_products]
+        const values = [...this.state.quote_products]
         values[i]["product_code"] = old_product
         values[i]["quantity"] = old_quant
         values[i]["bags"] = old_bags
-        this.setState({ order_products: values });
+        this.setState({ quote_products: values });
     }
 
     handleSubmitOrderProd(id) {
@@ -113,7 +106,7 @@ class OrderSummary extends Component {
             this.setState({ error: null })
         }
 
-        let product = this.state.order_products.filter(product => product.id === id)[0]
+        let product = this.state.quote_products.filter(product => product.id === id)[0]
 
         const requestOptions = {
             method: 'POST',
@@ -121,14 +114,14 @@ class OrderSummary extends Component {
                 'Content-Type': 'application/json',
             },
             body: {
-                order_no: this.state.order_no,
+                quote_ref: this.state.quote_ref,
                 product_code: product.product_code,
                 quantity: product.quantity,
                 bags: product.bags
             }
         };
         requestOptions.body = JSON.stringify(requestOptions.body);
-        fetch('/api/order/' + this.state.order_no + "/product", requestOptions)
+        fetch('/api/quote/' + this.state.quote_ref + "/product", requestOptions)
             .then(response => {
                 response.json();
                 if (response.ok) {
@@ -137,7 +130,7 @@ class OrderSummary extends Component {
     }
 
     validateProductCodes(product_code) {
-        const arr = this.state.order_products.filter(product => product.product_code === product_code)
+        const arr = this.state.quote_products.filter(product => product.product_code === product_code)
         if (arr.length > 1) {
             return false
         }
@@ -153,7 +146,7 @@ class OrderSummary extends Component {
             this.setState({ error: null })
         }
 
-        let product = this.state.order_products.filter(product => product.id === id)[0]
+        let product = this.state.quote_products.filter(product => product.id === id)[0]
 
         const requestOptions = {
             method: 'PUT',
@@ -161,14 +154,14 @@ class OrderSummary extends Component {
                 'Content-Type': 'application/json',
             },
             body: {
-                order_no: this.state.order_no,
+                quote_ref: this.state.quote_ref,
                 product_code: product.product_code,
                 quantity: product.quantity,
                 bags: product.bags
             }
         };
         requestOptions.body = JSON.stringify(requestOptions.body);
-        fetch('/api/order/' + this.state.order_no + "/product/" + old_product, requestOptions)
+        fetch('/api/quote/' + this.state.quote_ref + "/product/" + old_product, requestOptions)
             .then(response => {
                 response.json();
                 if (response.ok) {
@@ -193,22 +186,22 @@ class OrderSummary extends Component {
 
 
     render() {
-        const { order_details, order_products, invoices } = this.state
+        const { quote_ref, quote_details, quote_products } = this.state;
         return (
             <Card className='m-4' >
 
                 <Card.Body>
                     <Row>
                         <Col>
-                            <Card.Title xs={9}>Order Summary: {this.state.order_no}</Card.Title>
+                            <Card.Title xs={9}>Quote Summary: {this.state.quote_ref}</Card.Title>
                         </Col>
                         <Col xs={3}>
                             <Button
                                 variant='outline-primary'
                                 className='mb-4'
-                                href="/orders">
+                                href="/quotes">
                                 <ArrowLeft className="mr-1"></ArrowLeft>
-                                Back to Orders</Button>
+                                Back to Quotes</Button>
                         </Col>
                     </Row>
 
@@ -216,46 +209,46 @@ class OrderSummary extends Component {
                     {this.state.loading && <h4>Loading data, please wait</h4>}
                     {!this.state.error && !this.state.loading &&
                         <div>
-
-                            <Card.Subtitle >Order Details</Card.Subtitle>
+                            <Card.Subtitle >Quote Details</Card.Subtitle>
                             <Container w-100 className="m-0" >
                                 <Row>
                                     <Col>
-                                        <Card.Text>Order No: {this.state.order_no}</Card.Text>
+                                        <Card.Text>Quote Ref: {this.state.quote_ref}</Card.Text>
                                     </Col>
                                     <Col>
-                                        <Card.Text>Order Date: {util.formatDate(order_details.order_date)}</Card.Text>
+                                        <Card.Text>Quote Number: {this.state.quote_number}</Card.Text>
                                     </Col>
                                     <Col>
-                                        <Card.Text>Credit Period: {order_details.credit_period}</Card.Text>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <Card.Text>Picked: {order_details.picked}</Card.Text>
-                                    </Col>
-                                    <Col>
-                                        <Card.Text>Location: {order_details.location}</Card.Text>
-                                    </Col>
-                                    <Col>
-                                        <Card.Text>Stock Reserve: {order_details.stock_reserve}</Card.Text>
+                                        <Card.Text>Order Date: {util.formatDate(quote_details.order_date)}</Card.Text>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <Card.Text>Customer PO: {order_details.customer_po}</Card.Text>
+                                        <Card.Text>Credit Period: {quote_details.credit_period}</Card.Text>
+                                    </Col>
+
+                                    <Col>
+                                        <Card.Text>Picked: {quote_details.picked}</Card.Text>
                                     </Col>
                                     <Col>
-                                        <Card.Text>Quote Ref: {order_details.quote_ref}</Card.Text>
+                                        <Card.Text>Location: {quote_details.location}</Card.Text>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <Card.Text>Stock Reserve: {quote_details.stock_reserve}</Card.Text>
                                     </Col>
                                     <Col>
-                                        <Card.Text>Customer Ref: {order_details.customer_ref}</Card.Text>
+                                        <Card.Text>Customer PO: {quote_details.customer_po}</Card.Text>
+                                    </Col>
+                                    <Col>
+                                        <Card.Text>Customer Ref: {quote_details.customer_ref}</Card.Text>
                                     </Col>
                                 </Row>
                             </Container>
 
                             <Card.Subtitle className="mt-4">Order Products</Card.Subtitle>
-                            {order_products.map((product, i) => (
+                            {quote_products.map((product, i) => (
                                 <OrderProductEditor
                                     id={product.id}
                                     product_code={product.product_code}
@@ -270,65 +263,14 @@ class OrderSummary extends Component {
                                     handleDelete={this.handleDelete.bind(this)}
                                 ></OrderProductEditor>
                             ))}
-                            <Button className="mb-4" onClick={() => this.handleAdd(order_products.length)}><PlusCircle></PlusCircle></Button>
-                            <Card.Subtitle className="mt-4">Invoices</Card.Subtitle>
-                            <Table bordered striped className='mt-2'>
-                                <thead>
-                                    <th>Selected</th>
-                                    <th>Invoice_no</th>
-                                    <th>Invoice_date</th>
-                                    <th>Discount</th>
-                                    <th>VAT</th>
-                                    <th>Payment Method</th>
-                                    <th>Paid</th>
-                                    <th>Date Paid</th>
-                                    <th>Delivery Ref</th>
-                                </thead>
-                                <tbody>
-                                    {invoices ? invoices.map((invoice) => {
-                                        return (
-                                            <tr key={invoice.invoice_no}>
-                                                <td>
-                                                    <Form.Check
-                                                        type="radio"
-                                                        name="group1"
-                                                        checked={this.state.selectedInvoice === invoice.invoice_no}
-                                                        aria-label={invoice.invoice_no}
-                                                        value={invoice.invoice_no}
-                                                        onChange={e => this.handleOptionChange(e)}
-                                                    />
-                                                </td>
-                                                <td>{invoice.invoice_no}</td>
-                                                <td>{invoice.invoice_date}</td>
-                                                <td>{invoice.discount}</td>
-                                                <td>{invoice.vat}</td>
-                                                <td>{invoice.payment_method}</td>
-                                                <td>{invoice.paid}</td>
-                                                <td>{invoice.date_paid}</td>
-                                                <td>{invoice.delivery_ref}</td>
-                                            </tr>
-                                        )
-                                    }) : <tr></tr>}
-                                </tbody>
-                            </Table>
-
+                            <Button className="mb-4" onClick={() => this.handleAdd(quote_products.length)}><PlusCircle></PlusCircle></Button>
                         </div>
-
                     }
                 </Card.Body>
-                <DeleteConfirmation
-                    handleClose={this.handleCloseDelete.bind(this)}
-                    handleShow={this.handleShowDelete.bind(this)}
-                    handleDelete={this.handleDelete.bind(this)}
-                    showDelete={this.state.showDeleteConf}
-                    table="order product"
-                    selectedRef={""}
-                ></DeleteConfirmation>
-
             </Card>
-
         )
+
     }
 }
 
-export default withRouter(OrderSummary) 
+export default QuoteSummary
