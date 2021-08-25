@@ -765,8 +765,8 @@ CREATE TABLE `Orders` (
   UNIQUE KEY `Orders_UN` (`quote_ref`),
   KEY `Order_FK` (`quote_ref`),
   KEY `Order_FK_1` (`customer_ref`),
-  CONSTRAINT `Order_FK` FOREIGN KEY (`quote_ref`) REFERENCES `Quote` (`quote_ref`) ON UPDATE CASCADE,
   CONSTRAINT `Order_FK_1` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Orders_FK` FOREIGN KEY (`quote_ref`) REFERENCES `Quote` (`quote_ref`) ON UPDATE CASCADE,
   CONSTRAINT `Orders_CHECK` CHECK (`picked` = 1 or `picked` = 0),
   CONSTRAINT `Orders_CHECK_stock` CHECK (`stock_reserve` = 1 or `stock_reserve` = 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1000,7 +1000,7 @@ DROP TABLE IF EXISTS `Quote_Products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Quote_Products` (
-  `quote_ref` varchar(100) NOT NULL,
+  `quote_ref` int(11) NOT NULL,
   `product_code` varchar(100) NOT NULL,
   `bags` int(11) DEFAULT NULL,
   `quantity` bigint(20) NOT NULL,
@@ -1208,4 +1208,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-25 10:53:02
+-- Dump completed on 2021-08-25 10:55:53
