@@ -54,7 +54,7 @@ router.post('/', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.query(`
       INSERT INTO Quote (quote_ref, quote_number, order_date, credit_period, picked, location, stock_reserve, customer_po, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)
-      `,[q.quote_ref,q.quote_number]).then(rows => {
+      `,[q.quote_ref,q.quote_number,q.order_date,q.credit_period,q.picked,q.location,q.stock_reserve,q.customer_po,q.customer_ref]).then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error('inserting quote', e_msg, 500, "none", res, conn);
         } else {
@@ -77,8 +77,9 @@ router.put('/:old_quote_ref', function (req, res) {
 
   db_pool.getConnection().then(conn => {
     conn.query(`
-      UPDATE Quote SET quote_ref=?, quote_number=? WHERE quote_ref=?
-      `,[q.quote_ref,q.quote_number,req.params.old_quote_ref]).then(rows => {
+      UPDATE Quote SET quote_ref=?, quote_number=?, order_date=?, credit_period=?, picked=?, location=?, stock_reserve=?, customer_po=?, customer_ref=?
+      WHERE quote_ref = ?
+      `,[q.quote_ref,q.quote_number,q.order_date,q.credit_period,q.picked,q.location,q.stock_reserve,q.customer_po,q.customer_ref,req.params.old_quote_ref]).then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error(`updating quote ${req.params.old_quote_ref}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
