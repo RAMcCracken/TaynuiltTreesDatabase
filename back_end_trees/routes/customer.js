@@ -45,14 +45,14 @@ router.get('/:customer_ref', function (req, res) {
         LEFT JOIN Customer_Phone cp ON
           c.customer_ref = cp.customer_ref
         WHERE c.customer_ref = ?
-        GROUP BY s.supplier_code
+        GROUP BY c.customer_ref
         `,[req.params.customer_ref])
         .then(rows => {
           if (rows.length !== 1) {
             util.handle_sql_error(`getting customer ${req.params.customer_ref}, doesn't exist`, e_msg, 404, "none", res, conn);
           } else {
             conn.end();
-            res.send(rows);
+            res.send(rows[0]);
           }
         })
         .catch(err => {

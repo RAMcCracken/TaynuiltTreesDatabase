@@ -7,7 +7,7 @@ router.use(function (req, res, next) {
   next()
 })
 
-// GET all product
+// GET all products
 router.get('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let e_msg = "Err: GET /api/product -";
@@ -35,7 +35,7 @@ router.get('/:product_code', function (req, res) {
         util.handle_sql_error(`getting product ${req.params.product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
       } else {
         conn.end();
-        res.send(rows);
+        res.send(rows[0]);
       }
     }).catch(err => {
       util.handle_sql_error('single product', e_msg, 500, err, res, conn);

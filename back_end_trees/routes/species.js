@@ -35,7 +35,7 @@ router.get('/:species_code', function (req, res) {
         util.handle_sql_error(`getting species ${req.params.species_code}, doesn't exist`, e_msg, 404, "none", res, conn);
       } else {
         conn.end();
-        res.send(rows);
+        res.send(rows[0]);
       }
     }).catch(err => {
       util.handle_sql_error('single species', e_msg, 500, err, res, conn);

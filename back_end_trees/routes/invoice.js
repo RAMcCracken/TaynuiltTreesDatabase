@@ -43,7 +43,7 @@ router.get('/:invoice_no', function (req, res) {
             util.handle_sql_error(`getting invoice ${req.params.invoice_no}, doesn't exist`, e_msg, 404, "none", res, conn);
           } else {
             conn.end();
-            res.send(rows);
+            res.send(rows[0]);
           }
         })
         .catch(err => {
@@ -122,6 +122,27 @@ router.put('/:invoice_no', function (req, res) {
   });
 })
 
+// POST an invoice product
+router.post(`/:invoice_no/product`, function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: POST /api/invoice/${req.params.invoice_no}/product -`;
+  let i = req.body;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      INSERT INTO Invoice_Products (invoice_no, product_code, bags, quantity)
+      VALUES (?,?,?,?)
+      `, [i.invoice_no,i.product_code,i.bags,i.quantity,]).then(() => {
+        conn.end();
+        res.send(i);
+      }).catch(err => {
+          util.handle_sql_error(`adding invoice product`, e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error(`getting connection from pool`, e_msg, 500, err, res, conn);
+  })
+})
+
 // PUT update an invoice product
 router.put('/:old_invoice_no/product/:old_product_code', function (req, res) {
   let db_pool = req.app.get('db_pool');
@@ -149,5 +170,27 @@ router.put('/:old_invoice_no/product/:old_product_code', function (req, res) {
   })
 })
 
+// DELETE invoice product
+router.delete('/:invoice_no/product/:product_code', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: DELETE /api/invoice/${req.params.invoice_no}/product/${req.params.product_code} -`;
+
+  db_pool.getConnection().then(conn => {
+    conn.query(`
+      DELETE FROM Invoice_Products WHERE invoice_no=? AND product_code=?
+      `,[req.params.invoice_no,req.params.product_code]).then(rows => {
+        if (rows.affectedRows !== 1) {
+          util.handle_sql_error(`deleting invoice product ${req.params.invoice_no}/${req.params.product_code}, doesn't exist`, e_msg, 404, "none", res, conn);
+        } else {
+          conn.end();
+          res.send("");
+        }
+      }).catch(err => {
+        util.handle_sql_error('deleting invoice product', e_msg, 500, err, res, conn);
+      })
+  }).catch(err => {
+      util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+  })
+})
 // export to main js file
 module.exports = router
