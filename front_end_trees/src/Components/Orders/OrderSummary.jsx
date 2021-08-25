@@ -80,11 +80,24 @@ class OrderSummary extends Component {
         this.setState({ order_products: [...values] })
     }
 
-    handleSubmitOrderProd(e, id) {
-        e.preventDefault();
+    handleCancel(i, old_product, old_quant, old_bags) {
+        const values = [...this.state.order_products]
+        values[i]["product_code"] = old_product
+        values[i]["quantity"] = old_quant
+        values[i]["bags"] = old_bags
+        this.setState({ order_products: values });
+    }
+
+    handleSubmitOrderProd(id) {
+        if (!this.validateProductCodes()) {
+            this.setState({ error: "Please enter a unique product code" })
+            return;
+        } else {
+            this.setState({ error: null })
+        }
+
         let product = this.state.order_products.filter(product => product.id === id)[0]
 
-        console.log(e.target.name + " " + e.target.value);
         const requestOptions = {
             method: 'POST',
             headers: {
@@ -99,6 +112,46 @@ class OrderSummary extends Component {
         };
         requestOptions.body = JSON.stringify(requestOptions.body);
         fetch('/api/order/' + this.state.order_no + "/product", requestOptions)
+            .then(response => {
+                response.json();
+                if (response.ok) {
+                }
+            })
+    }
+
+    validateProductCodes(product_code) {
+        const arr = this.state.order_products.filter(product => product.product_code === product_code)
+        if (arr.length > 1) {
+            return false
+        }
+        return true
+    }
+
+
+    handleEditOrderProd(id, old_product) {
+        if (!this.validateProductCodes()) {
+            this.setState({ error: "Please enter a unique product code" })
+            return;
+        } else {
+            this.setState({ error: null })
+        }
+
+        let product = this.state.order_products.filter(product => product.id === id)[0]
+
+        const requestOptions = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: {
+                order_no: this.state.order_no,
+                product_code: product.product_code,
+                quantity: product.quantity,
+                bags: product.bags
+            }
+        };
+        requestOptions.body = JSON.stringify(requestOptions.body);
+        fetch('/api/order/' + this.state.order_no + "/product/" + old_product, requestOptions)
             .then(response => {
                 response.json();
                 if (response.ok) {
@@ -154,15 +207,20 @@ class OrderSummary extends Component {
                             </Container>
 
                             <Card.Subtitle className="mt-4">Order Products</Card.Subtitle>
-                            {/* {order_products.map((product, i) => (
+                            {order_products.map((product, i) => (
                                 <OrderProductEditor
+                                    id={product.id}
                                     product_code={product.product_code}
                                     quantity={product.quantity}
                                     bags={product.bags}
+                                    i={i}
                                     handleChangeProduct={this.handleChangeProduct}
-                                    handleSubmitOrderProd={this.handleSubmitOrderProd}
+                                    handleSubmitOrderProd={this.handleSubmitOrderProd.bind(this)}
+                                    handleEditOrderProd={this.handleEditOrderProd.bind(this)}
+                                    handleSubtract={this.handleSubtract}
+                                    handleCancel={this.handleCancel.bind(this)}
                                 ></OrderProductEditor>
-                            ))} */}
+                            ))}
                             {/* <Col xs={1} className="d-flex flex-col align-self-top"> */}
                             {/* <Button className="mb-4" onClick={() => this.handleAdd(i)}><PlusCircle></PlusCircle></Button> */}
                             {/* </Col> */}

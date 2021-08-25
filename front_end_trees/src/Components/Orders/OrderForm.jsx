@@ -70,7 +70,7 @@ function OrderForm(props) {
                     <Col xs={12} md={4}>
                         <Form.Label className="d-flex align-self-left">Credit Period</Form.Label>
                         <Form.Control
-                            type="text"
+                            type="number"
                             name="credit_period"
                             placeholder="Credit Period"
                             value={props.credit_period}
