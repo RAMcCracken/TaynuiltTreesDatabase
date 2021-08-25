@@ -53,7 +53,7 @@ router.post('/', function (req, res) {
 
   db_pool.getConnection().then(conn => {
     conn.query(`
-      INSERT INTO Quote (quote_ref, quote_number) VALUES (?,?)
+      INSERT INTO Quote (quote_ref, quote_number, order_date, credit_period, picked, location, stock_reserve, customer_po, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)
       `,[q.quote_ref,q.quote_number]).then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error('inserting quote', e_msg, 500, "none", res, conn);
