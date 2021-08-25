@@ -5,6 +5,7 @@ import { DashCircle, PlusCircle } from 'react-bootstrap-icons'
 import Button from 'react-bootstrap/Button'
 import Table from 'react-bootstrap/Table'
 import { withRouter } from 'react-router'
+import OrderProductEditor from './OrderProductEditor'
 const util = require("../../Utils")
 
 class OrderSummary extends Component {
@@ -153,57 +154,18 @@ class OrderSummary extends Component {
                             </Container>
 
                             <Card.Subtitle className="mt-4">Order Products</Card.Subtitle>
-                            {order_products.map((product, i) => (
-                                <Form>
-                                    <Form.Label>Product {product.product_code}</Form.Label>
-                                    <Form.Group className="mb-3" controlId="product.id">
-                                        <Row>
-                                            <Col xs={4}>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Product Code"
-                                                    name="product_code"
-                                                    value={product.product_code}
-                                                    onChange={e => this.handleChangeProduct(i, e)}
-                                                />
-                                            </Col>
-                                            <Col xs={2}>
-                                                <Form.Control
-                                                    type="number"
-                                                    placeholder="Quantity"
-                                                    name="quantity"
-                                                    value={product.quantity}
-                                                    onChange={e => this.handleChangeProduct(i, e)}
-                                                />
-                                            </Col>
-                                            <Col xs={2}>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Bags"
-                                                    name="bags"
-                                                    value={product.bags}
-                                                    onChange={e => this.handleChangeProduct(i, e)}
-                                                />
-                                            </Col>
-
-                                            <Col xs={1} className="d-flex flex-col align-self-top">
-                                                <Button className="mb-4" onClick={() => this.handleAdd(i)}><PlusCircle></PlusCircle></Button>
-                                            </Col>
-                                            <Col xs={1} className="d-flex flex-col align-self-top">
-                                                <Button className="mb-4" disabled={product.id === 1} onClick={() => this.handleSubtract(i)}><DashCircle></DashCircle></Button>
-                                            </Col>
-                                            <Col xs={2} className="d-flex flex-col align-self-top">
-                                                <Button
-                                                    className="mb-4"
-                                                    variant="success"
-                                                    type="submit"
-                                                    onClick={e => this.handleSubmitOrderProd(e, product.id)}>
-                                                    Save</Button>
-                                            </Col>
-                                        </Row>
-                                    </Form.Group>
-                                </Form>
-                            ))}
+                            {/* {order_products.map((product, i) => (
+                                <OrderProductEditor
+                                    product_code={product.product_code}
+                                    quantity={product.quantity}
+                                    bags={product.bags}
+                                    handleChangeProduct={this.handleChangeProduct}
+                                    handleSubmitOrderProd={this.handleSubmitOrderProd}
+                                ></OrderProductEditor>
+                            ))} */}
+                            {/* <Col xs={1} className="d-flex flex-col align-self-top"> */}
+                            {/* <Button className="mb-4" onClick={() => this.handleAdd(i)}><PlusCircle></PlusCircle></Button> */}
+                            {/* </Col> */}
                             <Card.Subtitle className="mt-4">Invoices</Card.Subtitle>
                             <Table bordered striped className='mt-2'>
                                 <thead>
