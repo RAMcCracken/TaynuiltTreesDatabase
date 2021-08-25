@@ -189,5 +189,46 @@ router.delete('/:quote_no/product/:product_code', function (req, res) {
 })
 
 // POST to turn a quote into an order
+router.post('/:quote_ref/confirm', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: POST /api/quote/${req.params.quote_ref}/confirm -`;
+  let b = req.body;
+  let order_no = `o${req.params.quote_ref}`;
+
+  // INSERT ORDER
+  // INSERT Order products from quote products
+  // UPDATE quote conf
+  // COMMIT
+  db_pool.getConnection().then(conn => {
+    conn.beginTransaction().then(() => {
+      conn.query(`INSERT INTO Orders VALUES(?,?,?,?,?,?,?,?,?)`,
+        [order_no,b.order_date,b.credit_period,b.picked,b.location,b.stock_reserve,b.customer_po,req.params.quote_ref,b.customer_ref]).then(() => {
+          conn.query(`
+            INSERT INTO Order_Products (order_no, product_code, bags, quantity)
+            SELECT ?, product_code, bags, quantity
+            FROM Quote_Products WHERE quote_ref = ?
+            `,[order_no,req.params.quote_ref]).then(() => {
+              conn.query(`
+                UPDATE Quote SET quote_confirmed=1 WHERE quote_ref = ?
+                `,[req.params.quote_ref]).then(() => {
+                  conn.commit();
+                  res.send("");
+                }).catch(err => {
+                  util.handle_sql_error('updating quote confirmation', e_msg, 500, err, res, conn);
+                })
+            }).catch(err => {
+              util.handle_sql_error('inserting order products', e_msg, 500, err, res, conn);
+            })
+        }).catch(err => {
+          util.handle_sql_error('inserting order', e_msg, 500, err, res, conn);
+        })
+    }).catch(err => {
+      util.handle_sql_error('starting transaction', e_msg, 500, err, res, conn);
+    })
+  }).catch(err => {
+      util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+  })
+})
+
 
 module.exports = router
