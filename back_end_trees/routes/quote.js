@@ -45,6 +45,45 @@ router.get('/:quote_ref', function (req, res) {
   })
 })
 
+// GET a detailed quote by :quote_ref.
+// Return all ass quote_products, invoices, and each invoices ass products.
+// order: {order_products: [], invoices: [data: foo, invoice_products: []]}
+router.get('/:order_no/detailed', function (req, res) {
+  let order_no = req.params.order_no;
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: GET /api/order/${order_no}/detailed -`;
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT * FROM Orders WHERE order_no = ?
+        `, [order_no])
+        .then(rows => {
+          if (rows.length !== 1) {
+            throw "order not found"
+          } 
+          delete rows.meta;
+          order = {order: rows[0]}
+        })
+          .then(() => {
+            // get ass order prod
+            conn.query(`
+              SELECT * FROM Order_Products WHERE order_no = ?
+              `, [order_no])
+              .then(rows => {
+                // orders: {order: {food}, order_ass_prod: [{foo}]}
+                delete rows.meta;
+                order.order_ass_prod = rows;
+              })
+          })
+        .catch(err => {
+          util.handle_sql_error('getting orders', e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+            util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+      })
+})
+
 // POST new quote
 router.post('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
@@ -53,8 +92,8 @@ router.post('/', function (req, res) {
 
   db_pool.getConnection().then(conn => {
     conn.query(`
-      INSERT INTO Quote (quote_ref, quote_number, order_date, credit_period, picked, location, stock_reserve, customer_po, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)
-      `,[q.quote_ref,q.quote_number,q.order_date,q.credit_period,q.picked,q.location,q.stock_reserve,q.customer_po,q.customer_ref]).then(rows => {
+      INSERT INTO Quote (quote_number, order_date, credit_period, picked, location, stock_reserve, customer_po, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)
+      `,[q.quote_number,q.order_date,q.credit_period,q.picked,q.location,q.stock_reserve,q.customer_po,q.customer_ref]).then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error('inserting quote', e_msg, 500, "none", res, conn);
         } else {
