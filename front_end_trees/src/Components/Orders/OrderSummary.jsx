@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button'
 import Table from 'react-bootstrap/Table'
 import { withRouter } from 'react-router'
 import OrderProductEditor from './OrderProductEditor'
+import DeleteConfirmation from '../DeleteConfirmation'
 const util = require("../../Utils")
 
 class OrderSummary extends Component {
@@ -21,6 +22,7 @@ class OrderSummary extends Component {
             disabled: true,
             loading: true,
             error: null,
+            showDeleteConf: false
         }
     }
 
@@ -40,17 +42,17 @@ class OrderSummary extends Component {
                 }
             })
             .then(data => {
-                // let products
-                // let product_ids = null
-                // if (data.order_ass_prod) {
-                //     products = data.order_ass_prod.split(",");
-                //     product_ids = products.map((product, i) => {
-                //         const id = i + 1
-                //         return { id, product_code: product.product_code, quantity: product.quantity, bags: product.quantity }
-                //     })
-                // }
+                let products
+                let product_ids = null
+                if (data.order_ass_prod) {
+                    products = data.order_ass_prod;
+                    product_ids = products.map((product, i) => {
+                        const id = i + 1
+                        return { id, product_code: product.product_code, quantity: product.quantity, bags: product.bags }
+                    })
+                }
 
-                this.setState({ order_details: data.order, order_products: data.order_ass_prod, invoices: data.invoices, loading: false, error: null })
+                this.setState({ order_details: data.order, order_products: product_ids, invoices: data.invoices, loading: false, error: null })
             })
             .catch(error => {
                 console.log("here");
@@ -75,9 +77,27 @@ class OrderSummary extends Component {
     }
 
     handleSubtract = (i) => {
-        const values = [...this.state.order_products]
-        values.splice(i, 1)
-        this.setState({ order_products: [...values] })
+
+    }
+
+    handleDelete(id) {
+        let product = this.state.order_products.filter(product => product.id === id)[0]
+
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        fetch('/api/order/' + this.state.order_no + "/product/" + product.product_code, requestOptions)
+            .then(response => {
+                if (response.ok) {
+                    const result = this.state.order_products.filter(product => product.id !== id);
+                    this.setState({ order_products: result })
+                }
+            })
+        this.handleCloseDelete();
     }
 
     handleCancel(i, old_product, old_quant, old_bags) {
@@ -159,6 +179,22 @@ class OrderSummary extends Component {
             })
     }
 
+    //opens delete modal
+    handleShowDelete(event) {
+        event.preventDefault();
+        this.setState({
+            showDeleteConf: true
+        });
+    }
+
+    //closes delete modal
+    handleCloseDelete = () => {
+        this.setState({
+            showDeleteConf: false
+        });
+    }
+
+
     render() {
         const { order_details, order_products, invoices } = this.state
         return (
@@ -167,7 +203,8 @@ class OrderSummary extends Component {
                 <Card.Body>
                     <Card.Title className='mt-4 mb-4'>Order Summary: {this.state.order_no}</Card.Title>
                     {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
-                    {this.state.loading ? <h4>Loading data, please wait</h4> :
+                    {this.state.loading && <h4>Loading data, please wait</h4>}
+                    {!this.state.error && !this.state.loading &&
                         <div>
                             <Card.Subtitle >Order Details</Card.Subtitle>
                             <Container w-100 className="m-0" >
@@ -219,11 +256,10 @@ class OrderSummary extends Component {
                                     handleEditOrderProd={this.handleEditOrderProd.bind(this)}
                                     handleSubtract={this.handleSubtract}
                                     handleCancel={this.handleCancel.bind(this)}
+                                    handleDelete={this.handleDelete.bind(this)}
                                 ></OrderProductEditor>
                             ))}
-                            {/* <Col xs={1} className="d-flex flex-col align-self-top"> */}
-                            {/* <Button className="mb-4" onClick={() => this.handleAdd(i)}><PlusCircle></PlusCircle></Button> */}
-                            {/* </Col> */}
+                            <Button className="mb-4" onClick={() => this.handleAdd(order_products.length)}><PlusCircle></PlusCircle></Button>
                             <Card.Subtitle className="mt-4">Invoices</Card.Subtitle>
                             <Table bordered striped className='mt-2'>
                                 <thead>
@@ -266,8 +302,17 @@ class OrderSummary extends Component {
                             </Table>
 
                         </div>
+
                     }
                 </Card.Body>
+                <DeleteConfirmation
+                    handleClose={this.handleCloseDelete.bind(this)}
+                    handleShow={this.handleShowDelete.bind(this)}
+                    handleDelete={this.handleDelete.bind(this)}
+                    showDelete={this.state.showDeleteConf}
+                    table="order product"
+                    selectedRef={""}
+                ></DeleteConfirmation>
 
             </Card>
 

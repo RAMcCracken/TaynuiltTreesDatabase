@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Row, Col } from 'react-bootstrap';
-import { CheckCircle, Pencil, XCircle } from 'react-bootstrap-icons';
+import { Row, Col, AccordionButton } from 'react-bootstrap';
+import { CheckCircle, Pencil, XCircle, Trash } from 'react-bootstrap-icons';
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 
@@ -25,6 +25,15 @@ class OrderProductEditor extends Component {
         }
     }
 
+    handleDelete(e) {
+        e.preventDefault();
+        if (!this.state.old_product_code && !this.state.old_quantity && !this.state.old_bags) {
+            this.props.handleSubtract(this.props.i)
+        } else {
+            this.props.handleDelete(this.props.id);
+        }
+    }
+
     handleSave(e) {
         e.preventDefault();
         if (!this.state.old_product_code && !this.state.old_quantity && !this.state.old_bags) {
@@ -38,10 +47,10 @@ class OrderProductEditor extends Component {
     render() {
         return (
             <Form>
-                <Form.Label>Product {this.props.product_code}</Form.Label>
                 <Form.Group className="mb-3" controlId="product.id">
                     <Row>
                         <Col xs={4}>
+                            <Form.Label>Product Code</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Product Code"
@@ -52,6 +61,7 @@ class OrderProductEditor extends Component {
                             />
                         </Col>
                         <Col xs={2}>
+                            <Form.Label>Quantity</Form.Label>
                             <Form.Control
                                 type="number"
                                 placeholder="Quantity"
@@ -62,8 +72,9 @@ class OrderProductEditor extends Component {
                             />
                         </Col>
                         <Col xs={2}>
+                            <Form.Label>Bags</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="number"
                                 placeholder="Bags"
                                 disabled={!this.state.edit}
                                 name="bags"
@@ -72,30 +83,33 @@ class OrderProductEditor extends Component {
                             />
                         </Col>
                         {this.state.edit &&
-                            <Col xs={1} className="d-flex flex-col align-self-top">
+                            <Col xs={1} className="mt-4 d-flex flex-col align-self-end">
                                 <Button
-                                    className="mb-4"
                                     variant="danger"
                                     onClick={this.handleCancel.bind(this)}>
                                     <XCircle></XCircle></Button>
                             </Col>}
-                        {this.state.edit && <Col xs={1} className="d-flex flex-col align-self-top">
+                        {this.state.edit && <Col xs={1} className="mt-4 d-flex flex-col align-self-end">
                             <Button
-                                className="mb-4"
                                 variant="success"
                                 type="submit"
                                 onClick={e => this.handleSave(e)}>
                                 <CheckCircle></CheckCircle></Button>
                         </Col>}
                         {!this.state.edit &&
-                            <Col xs={2} className="d-flex flex-col align-self-top">
+                            <Col xs={2} className="mt-4 d-flex flex-col align-self-end">
                                 <Button
-                                    className="mb-4"
                                     variant="primary"
                                     onClick={() => this.setState({ edit: true })}>
                                     <Pencil></Pencil> Edit </Button>
                             </Col>
                         }
+                        <Col xs={2} className="mt-4 d-flex flex-col align-self-end">
+                            <Button
+                                variant="outline-danger"
+                                onClick={e => this.handleDelete(e)}>
+                                <Trash></Trash> Delete </Button>
+                        </Col>
                     </Row>
                 </Form.Group>
             </Form>
