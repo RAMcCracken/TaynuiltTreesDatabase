@@ -58,7 +58,8 @@ CREATE TABLE `Customer_Phone` (
   `customer_ref` varchar(100) NOT NULL,
   PRIMARY KEY (`phone_number`,`customer_ref`),
   KEY `Customer_Phone_FK` (`customer_ref`),
-  CONSTRAINT `Customer_Phone_FK` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `Customer_Phone_FK` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `Customer_Phone_CHECK` CHECK (`phone_number` regexp '^0\\d{10}$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -68,7 +69,7 @@ CREATE TABLE `Customer_Phone` (
 
 LOCK TABLES `Customer_Phone` WRITE;
 /*!40000 ALTER TABLE `Customer_Phone` DISABLE KEYS */;
-INSERT INTO `Customer_Phone` VALUES ('-3333','aaaaa'),('012345','b1'),('0134534','a4'),('0134534','a5'),('0134534','affff5'),('0756565','a4'),('0756565','a5'),('0756565','affff5'),('366997292','b1');
+INSERT INTO `Customer_Phone` VALUES ('07565345141','affff5'),('07565625141','a4'),('07565625141','a5'),('07565625141','aaaaa'),('07565625141','affff5'),('07565625141','b1'),('07565625145','a5'),('07565625165','a4'),('07565625441','b1');
 /*!40000 ALTER TABLE `Customer_Phone` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1076,7 +1077,8 @@ CREATE TABLE `Supplier_Phone` (
   `supplier_code` varchar(100) NOT NULL,
   `phone_number` varchar(15) NOT NULL,
   PRIMARY KEY (`supplier_code`,`phone_number`),
-  CONSTRAINT `Supplier_Phone_FK` FOREIGN KEY (`supplier_code`) REFERENCES `Supplier` (`supplier_code`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `Supplier_Phone_FK` FOREIGN KEY (`supplier_code`) REFERENCES `Supplier` (`supplier_code`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `Supplier_Phone_CHECK` CHECK (`phone_number` regexp '^0\\d{10}$')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1086,7 +1088,7 @@ CREATE TABLE `Supplier_Phone` (
 
 LOCK TABLES `Supplier_Phone` WRITE;
 /*!40000 ALTER TABLE `Supplier_Phone` DISABLE KEYS */;
-INSERT INTO `Supplier_Phone` VALUES ('3','123123'),('3','23443');
+INSERT INTO `Supplier_Phone` VALUES ('3','07563625144'),('3','07565625144');
 /*!40000 ALTER TABLE `Supplier_Phone` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1197,4 +1199,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-25 10:21:17
+-- Dump completed on 2021-08-25 10:25:33
