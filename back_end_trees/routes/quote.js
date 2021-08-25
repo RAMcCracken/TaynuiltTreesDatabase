@@ -187,4 +187,7 @@ router.delete('/:quote_no/product/:product_code', function (req, res) {
       util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
   })
 })
+
+// POST to turn a quote into an order
+
 module.exports = router
