@@ -54,7 +54,7 @@ router.post('/', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.query(`
       INSERT INTO Quote (quote_ref, quote_number, order_date, credit_period, picked, location, stock_reserve, customer_po, customer_ref) VALUES (?,?,?,?,?,?,?,?,?)
-      `,[q.quote_ref,q.quote_number]).then(rows => {
+      `,[q.quote_ref,q.quote_number,q.order_date,q.credit_period,q.picked,q.location,q.stock_reserve,q.customer_po,q.customer_ref]).then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error('inserting quote', e_msg, 500, "none", res, conn);
         } else {
@@ -77,8 +77,9 @@ router.put('/:old_quote_ref', function (req, res) {
 
   db_pool.getConnection().then(conn => {
     conn.query(`
-      UPDATE Quote SET quote_ref=?, quote_number=? WHERE quote_ref=?
-      `,[q.quote_ref,q.quote_number,req.params.old_quote_ref]).then(rows => {
+      UPDATE Quote SET quote_ref=?, quote_number=?, order_date=?, credit_period=?, picked=?, location=?, stock_reserve=?, customer_po=?, customer_ref=?
+      WHERE quote_ref = ?
+      `,[q.quote_ref,q.quote_number,q.order_date,q.credit_period,q.picked,q.location,q.stock_reserve,q.customer_po,q.customer_ref,req.params.old_quote_ref]).then(rows => {
         if (rows.affectedRows !== 1) {
           util.handle_sql_error(`updating quote ${req.params.old_quote_ref}, doesn't exist`, e_msg, 404, "none", res, conn);
         } else {
@@ -186,4 +187,48 @@ router.delete('/:quote_no/product/:product_code', function (req, res) {
       util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
   })
 })
+
+// POST to turn a quote into an order
+router.post('/:quote_ref/confirm', function (req, res) {
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: POST /api/quote/${req.params.quote_ref}/confirm -`;
+  let b = req.body;
+  let order_no = `o${req.params.quote_ref}`;
+
+  // INSERT ORDER
+  // INSERT Order products from quote products
+  // UPDATE quote conf
+  // COMMIT
+  db_pool.getConnection().then(conn => {
+    conn.beginTransaction().then(() => {
+      conn.query(`INSERT INTO Orders VALUES(?,?,?,?,?,?,?,?,?)`,
+        [order_no,b.order_date,b.credit_period,b.picked,b.location,b.stock_reserve,b.customer_po,req.params.quote_ref,b.customer_ref]).then(() => {
+          conn.query(`
+            INSERT INTO Order_Products (order_no, product_code, bags, quantity)
+            SELECT ?, product_code, bags, quantity
+            FROM Quote_Products WHERE quote_ref = ?
+            `,[order_no,req.params.quote_ref]).then(() => {
+              conn.query(`
+                UPDATE Quote SET quote_confirmed=1 WHERE quote_ref = ?
+                `,[req.params.quote_ref]).then(() => {
+                  conn.commit();
+                  res.send("");
+                }).catch(err => {
+                  util.handle_sql_error('updating quote confirmation', e_msg, 500, err, res, conn);
+                })
+            }).catch(err => {
+              util.handle_sql_error('inserting order products', e_msg, 500, err, res, conn);
+            })
+        }).catch(err => {
+          util.handle_sql_error('inserting order', e_msg, 500, err, res, conn);
+        })
+    }).catch(err => {
+      util.handle_sql_error('starting transaction', e_msg, 500, err, res, conn);
+    })
+  }).catch(err => {
+      util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+  })
+})
+
+
 module.exports = router
