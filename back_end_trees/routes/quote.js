@@ -74,7 +74,7 @@ router.get('/:quote_ref/detailed', function (req, res) {
               })
           })
         .catch(err => {
-          util.handle_sql_error('getting quotes', e_msg, 500, err, res, conn);
+          util.handle_sql_error('getting quote', e_msg, 500, err, res, conn);
         })
       })
       .catch(err => {

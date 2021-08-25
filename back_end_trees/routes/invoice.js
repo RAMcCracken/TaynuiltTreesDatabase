@@ -55,6 +55,43 @@ router.get('/:invoice_no', function (req, res) {
       })
 })
 
+// GET a detailed invoice by :invoice_no.
+// Return all ass_quote_products
+router.get('/:invoice_no/detailed', function (req, res) {
+  let invoice_no = req.params.invoice_no;
+  let db_pool = req.app.get('db_pool');
+  let e_msg = `Err: GET /api/invoice/${invoice_no}/detailed -`;
+  db_pool.getConnection()
+    .then(conn => {
+      conn.query(`
+        SELECT * FROM Invoice WHERE invoice_no = ?
+        `, [invoice_no])
+        .then(rows => {
+          if (rows.length !== 1) {
+            throw "invoice not found"
+          } 
+          invoice = {invoice: rows[0]}
+        })
+          .then(() => {
+            // get ass invoice prod
+            conn.query(`
+              SELECT * FROM Invoice_Products WHERE invoice_no = ?
+              `, [invoice_no])
+              .then(rows => {
+                invoice.invoice_ass_prod = rows;
+                conn.end();
+                res.send(invoice);
+              })
+          })
+        .catch(err => {
+          util.handle_sql_error('getting invoice', e_msg, 500, err, res, conn);
+        })
+      })
+      .catch(err => {
+            util.handle_sql_error('getting connection from pool', e_msg, 500, err, res, conn);
+      })
+})
+
 // POST new invoice
 router.post('/', function (req, res) {
   let db_pool = req.app.get('db_pool');
