@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Card from 'react-bootstrap/Card'
+import Form from 'react-bootstrap/Form'
 import OrderForm from './OrderForm'
 const util = require("../../Utils")
 
@@ -7,7 +8,6 @@ class OrderCreator extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            order_no: "",
             order_date: "",
             credit_period: 0,
             picked: false,
@@ -16,6 +16,7 @@ class OrderCreator extends Component {
             customer_po: "",
             quote_ref: "",
             customer_ref: "",
+            error: null,
         }
     }
 
@@ -43,6 +44,9 @@ class OrderCreator extends Component {
         });
     };
 
+    handleCancel() {
+        this.props.history.push("/quotes");
+    }
 
     handleSubmit = e => {
         e.preventDefault();
@@ -53,7 +57,6 @@ class OrderCreator extends Component {
                 'Content-Type': 'application/json',
             },
             body: {
-                order_no: this.state.order_no,
                 order_date: util.formatDate(this.state.order_date),
                 credit_period: this.state.credit_period,
                 picked: this.state.picked,
@@ -69,10 +72,13 @@ class OrderCreator extends Component {
             .then(response => {
                 if (response.ok) {
                     e.target.reset();
+                    this.setState({
+                        error: null
+                    })
                     this.props.history.push("/orders");
                 } else {
                     return response.json().then((error) => {
-                        let err = error.message
+                        let err = error.sql_error
                         throw new Error(err);
                     })
                 }
@@ -83,26 +89,29 @@ class OrderCreator extends Component {
     }
 
     render() {
-        const { order_no, order_date, credit_period, picked, location, stock_reserve, customer_po, quote_ref, customer_ref } = this.state
+        const { order_date, credit_period, picked, location, stock_reserve, customer_po, quote_ref, customer_ref } = this.state
         return (
             <Card className='m-4' >
-                <Card.Title className='mt-4'>Add New Order</Card.Title>
+                <Card.Title className='m-4'>Add New Order</Card.Title>
+                {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                 <Card.Body className="d-flex flex-row justify-content-center">
-                    <OrderForm
-                        order_no={order_no}
-                        order_date={order_date}
-                        credit_period={credit_period}
-                        picked={picked}
-                        location={location}
-                        stock_reserve={stock_reserve}
-                        customer_po={customer_po}
-                        quote_ref={quote_ref}
-                        customer_ref={customer_ref}
-                        handleChange={this.handleChange.bind(this)}
-                        handleDateChange={this.handleDateChange.bind(this)}
-                        handleSubmit={this.handleSubmit.bind(this)}
-                        handleOptionChange={this.handleOptionChange.bind(this)}
-                    ></OrderForm>
+                    <Form className="w-50" onSubmit={this.handleSubmit}>
+                        <OrderForm
+                            order_date={order_date}
+                            credit_period={credit_period}
+                            picked={picked}
+                            location={location}
+                            stock_reserve={stock_reserve}
+                            customer_po={customer_po}
+                            quote_ref={quote_ref}
+                            customer_ref={customer_ref}
+                            handleChange={this.handleChange.bind(this)}
+                            handleDateChange={this.handleDateChange.bind(this)}
+                            handleSubmit={this.handleSubmit.bind(this)}
+                            handleOptionChange={this.handleOptionChange.bind(this)}
+                            handleCancel={this.handleCancel.bind(this)}
+                        ></OrderForm>
+                    </Form>
                 </Card.Body>
             </Card >
         )

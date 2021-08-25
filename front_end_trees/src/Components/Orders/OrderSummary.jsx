@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Card, Row, Col, Container } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form'
-import { DashCircle, PlusCircle } from 'react-bootstrap-icons'
+import { ArrowLeft, DashCircle, PlusCircle } from 'react-bootstrap-icons'
 import Button from 'react-bootstrap/Button'
 import Table from 'react-bootstrap/Table'
 import { withRouter } from 'react-router'
@@ -201,11 +201,26 @@ class OrderSummary extends Component {
             <Card className='m-4' >
 
                 <Card.Body>
-                    <Card.Title className='mt-4 mb-4'>Order Summary: {this.state.order_no}</Card.Title>
+                    <Row>
+                        <Col>
+                            <Card.Title xs={9}>Order Summary: {this.state.order_no}</Card.Title>
+                        </Col>
+                        <Col xs={3}>
+                            <Button
+                                variant='outline-primary'
+                                className='mb-4'
+                                disabled={this.state.selectedOrderNo === ""}
+                                href="/orders">
+                                <ArrowLeft className="mr-1"></ArrowLeft>
+                                Back to Orders</Button>
+                        </Col>
+                    </Row>
+
                     {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                     {this.state.loading && <h4>Loading data, please wait</h4>}
                     {!this.state.error && !this.state.loading &&
                         <div>
+
                             <Card.Subtitle >Order Details</Card.Subtitle>
                             <Container w-100 className="m-0" >
                                 <Row>
@@ -263,15 +278,15 @@ class OrderSummary extends Component {
                             <Card.Subtitle className="mt-4">Invoices</Card.Subtitle>
                             <Table bordered striped className='mt-2'>
                                 <thead>
-                                    <td>Selected</td>
-                                    <td>Invoice_no</td>
-                                    <td>Invoice_date</td>
-                                    <td>Discount</td>
-                                    <td>VAT</td>
-                                    <td>Payment Method</td>
-                                    <td>Paid</td>
-                                    <td>Date Paid</td>
-                                    <td>Delivery Ref</td>
+                                    <th>Selected</th>
+                                    <th>Invoice_no</th>
+                                    <th>Invoice_date</th>
+                                    <th>Discount</th>
+                                    <th>VAT</th>
+                                    <th>Payment Method</th>
+                                    <th>Paid</th>
+                                    <th>Date Paid</th>
+                                    <th>Delivery Ref</th>
                                 </thead>
                                 <tbody>
                                     {invoices ? invoices.map((invoice) => {

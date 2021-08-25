@@ -89,8 +89,8 @@ class CustomersViewer extends Component {
 
     render() {
         return (
-            <Card className='m-2' xs={12}>
-                <Card.Title className='mt-4'>Customers</Card.Title>
+            <Card className='m-4' xs={12}>
+                <Card.Title className='m-4'>Customers</Card.Title>
                 {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
                     <Card.Body>

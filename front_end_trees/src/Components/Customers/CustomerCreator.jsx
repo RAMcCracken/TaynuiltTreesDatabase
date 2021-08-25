@@ -91,7 +91,7 @@ class CustomerCreator extends Component {
         const { custref, firstname, surname, email, company, address1, address2, address3, address4, phoneFields } = this.state
         return (
             <Card className='m-4' >
-                <Card.Title className='mt-4'>Add New Customer</Card.Title>
+                <Card.Title className='m-4'>Add New Customer</Card.Title>
                 <Card.Body className="d-flex flex-row justify-content-center">
                     <CustomerForm
                         custref={custref}

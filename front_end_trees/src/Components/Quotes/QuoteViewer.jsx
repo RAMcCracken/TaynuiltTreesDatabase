@@ -1,36 +1,37 @@
 import React, { Component } from 'react'
-import Button from 'react-bootstrap/Button'
-import Table from 'react-bootstrap/Table'
-import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
-import { Link } from "react-router-dom"
-import { withRouter } from "react-router";
+import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card'
+import Table from 'react-bootstrap/Table'
+import { Link } from 'react-router-dom'
 import DeleteConfirmation from '../DeleteConfirmation'
-const util = require("../../Utils")
+import { Row, Col } from 'react-bootstrap'
+const util = require('../../Utils')
 
-class OrdersViewer extends Component {
+class QuoteViewer extends Component {
     constructor(props) {
         super(props)
+
         this.state = {
             data: [],
             loading: true,
             error: null,
-            selectedOrderNo: "",
+            selectedQuote: "",
             showDeleteConf: false
         }
     }
 
     componentDidMount() {
-        this.fetchOrderData();
+        this.fetchQuotes();
     }
 
-    fetchOrderData() {
-        fetch('/api/order')
+    fetchQuotes() {
+        fetch('/api/quote')
             .then(response => {
                 if (response.ok) {
                     return response.json()
                 } else {
-                    let err = "Problem occurred fetching order data"
+                    let err = "Problem occurred fetching quote data"
                     throw new Error(err);
                 }
             })
@@ -44,15 +45,10 @@ class OrdersViewer extends Component {
 
     handleOptionChange = e => {
         this.setState({
-            selectedOrderNo: e.target.value
+            selectedQuote: e.target.value
         });
     };
 
-    handleEdit = e => {
-        console.log(this.state.selectedOrderNo)
-        const order_row = this.state.data.filter(row => row.order_no === this.state.selectedOrderNo)[0];
-        console.log(order_row);
-    }
 
     handleDelete = e => {
         const requestOptions = {
@@ -62,14 +58,42 @@ class OrdersViewer extends Component {
             },
         };
 
-        fetch('/api/order/' + this.state.selectedOrderNo, requestOptions)
+        fetch('/api/quote/' + this.state.selectedQuote, requestOptions)
             .then(response => {
                 if (response.ok) {
-                    const result = this.state.data.filter(row => row.order_no !== this.state.selectedOrderNo);
-                    this.setState({ data: result, selectedOrderNo: "" })
+                    const result = this.state.data.filter(row => row.quote_ref != this.state.selectedQuote);
+
+                    this.setState({ data: result, selectedQuote: "" })
                 }
             })
         this.handleCloseDelete();
+    }
+
+    handleConfirm() {
+        let quote = this.state.data.filter(row => row.quote_ref == this.state.selectedQuote)[0]
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: {
+                quote_number: quote.quote_number,
+                order_date: util.formatDate(quote.order_date),
+                credit_period: quote.credit_period,
+                picked: quote.picked,
+                location: quote.location,
+                stock_reserve: quote.stock_reserve,
+                customer_po: quote.customer_po,
+                customer_ref: quote.customer_ref,
+            }
+        };
+        requestOptions.body = JSON.stringify(requestOptions.body);
+        fetch('/api/quote/' + this.state.selectedQuote + '/confirm', requestOptions)
+            .then(response => {
+                if (response.ok) {
+                }
+            })
     }
 
     //opens delete modal
@@ -90,27 +114,27 @@ class OrdersViewer extends Component {
     render() {
         return (
             <Card className='m-4'>
-                <Card.Title className='m-4'>Orders</Card.Title>
+                <Card.Title className='m-4'>Quotes</Card.Title>
                 {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
                     <Card.Body>
                         <Link to={
                             {
-                                pathname: "/edit-order",
+                                pathname: "/edit-quote",
                                 state: {
-                                    data: this.state.data ? this.state.data.filter(row => row.order_no === this.state.selectedOrderNo)[0] : ""
+                                    data: this.state.data ? this.state.data.filter(row => row.quote_ref === this.state.selectedQuote)[0] : ""
                                 }
                             }
                         }>
                             <Button
-                                disabled={this.state.selectedOrderNo === ""}
+                                disabled={this.state.selectedQuote === ""}
                                 className='m-2'
                                 onClick={this.handleEdit}>
                                 Edit
                         </Button>
                         </Link>
                         <Button
-                            disabled={this.state.selectedOrderNo === ""}
+                            disabled={this.state.selectedQuote === ""}
                             variant='danger'
                             className='m-2'
                             onClick={this.handleShowDelete.bind(this)}>
@@ -119,15 +143,28 @@ class OrdersViewer extends Component {
                         <Button
                             variant='info'
                             className='m-2'
-                            disabled={this.state.selectedOrderNo === ""}
-                            href={"/orders/" + this.state.selectedOrderNo}>
-                            View Order Details</Button>
+                            disabled={this.state.selectedQuote === ""}
+                            href={"/quotes/" + this.state.selectedQuote}>
+                            View Quote Details</Button>
+                        <Button
+                            variant='secondary'
+                            className='m-2'
+                            disabled={this.state.selectedQuote === ""}
+                            onClick={e => this.handleConfirm(e)}>
+                            Confirm as Order</Button>
+                        <Button
+                            variant="success"
+                            className="m-2"
+                            href="/new-quote">
+                            New Quote
+                            </Button>
                         <Form>
                             <Table bordered striped className='mt-2'>
                                 <thead>
                                     <tr>
                                         <th>Selected</th>
-                                        <th>Order No</th>
+                                        <th>Quote Ref</th>
+                                        <th>Quote Number</th>
                                         <th>Order Date</th>
                                         <th>Credit Period</th>
                                         <th>Picked</th>
@@ -136,31 +173,34 @@ class OrdersViewer extends Component {
                                         <th>Customer PO</th>
                                         <th>Quote Ref</th>
                                         <th>Customer Ref</th>
+                                        <th>Quote Confirmed</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.state.data ? this.state.data.map(order => {
+                                    {this.state.data ? this.state.data.map(quote => {
                                         return (
-                                            <tr key={order.order_no}>
+                                            <tr key={quote.quote_ref}>
                                                 <td>
                                                     <Form.Check
                                                         type="radio"
                                                         name="group1"
-                                                        checked={this.state.selectedOrderNo === order.order_no}
-                                                        aria-label={order.order_no}
-                                                        value={order.order_no}
-                                                        onChange={this.handleOptionChange}
+                                                        checked={this.state.selectedQuote == quote.quote_ref}
+                                                        aria-label={quote.quote_ref}
+                                                        value={quote.quote_ref}
+                                                        onChange={e => this.handleOptionChange(e)}
                                                     />
                                                 </td>
-                                                <td>{order.order_no}</td>
-                                                <td>{util.formatDate(order.order_date)}</td>
-                                                <td>{order.credit_period}</td>
-                                                <td>{order.picked}</td>
-                                                <td>{order.location}</td>
-                                                <td>{order.stock_reserve}</td>
-                                                <td>{order.customer_po}</td>
-                                                <td>{order.quote_ref}</td>
-                                                <td>{order.customer_ref}</td>
+                                                <td>{quote.quote_ref}</td>
+                                                <td>{quote.quote_number}</td>
+                                                <td>{util.formatDate(quote.order_date)}</td>
+                                                <td>{quote.credit_period}</td>
+                                                <td>{quote.picked}</td>
+                                                <td>{quote.location}</td>
+                                                <td>{quote.stock_reserve}</td>
+                                                <td>{quote.customer_po}</td>
+                                                <td>{quote.quote_ref}</td>
+                                                <td>{quote.customer_ref}</td>
+                                                <td>{quote.quote_confirmed}</td>
                                             </tr>
                                         );
                                     }) : <tr></tr>}
@@ -173,8 +213,8 @@ class OrdersViewer extends Component {
                             handleShow={this.handleShowDelete.bind(this)}
                             handleDelete={this.handleDelete.bind(this)}
                             showDelete={this.state.showDeleteConf}
-                            table="order"
-                            selectedRef={this.state.selectedOrderNo}
+                            table="quote"
+                            selectedRef={this.state.selectedQuote}
                         ></DeleteConfirmation>
                     </Card.Body>
                 }
@@ -183,4 +223,4 @@ class OrdersViewer extends Component {
     }
 }
 
-export default withRouter(OrdersViewer)
+export default QuoteViewer

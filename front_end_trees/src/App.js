@@ -10,6 +10,9 @@ import CustomerEditor from './Components/Customers/CustomerEditor';
 import OrderCreator from './Components/Orders/OrderCreator';
 import OrderEditor from './Components/Orders/OrderEditor';
 import OrderSummary from './Components/Orders/OrderSummary'
+import QuoteViewer from './Components/Quotes/QuoteViewer';
+import QuoteCreator from './Components/Quotes/QuoteCreator';
+import QuoteEditor from './Components/Quotes/QuoteEditor';
 
 function App() {
   return (
@@ -26,6 +29,9 @@ function App() {
             <Route path="/New-Order" component={OrderCreator} />
             <Route path="/Edit-Order" component={OrderEditor} />
             <Route path="/Orders/:id" component={OrderSummary} />
+            <Route path="/Quotes" component={QuoteViewer} />
+            <Route path="/New-Quote" component={QuoteCreator} />
+            <Route path="/Edit-Quote" component={QuoteEditor} />
           </Switch>
         </div>
 

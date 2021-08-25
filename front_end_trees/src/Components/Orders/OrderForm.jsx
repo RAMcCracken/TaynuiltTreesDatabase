@@ -7,8 +7,8 @@ import DatePicker from 'react-date-picker'
 
 function OrderForm(props) {
     return (
-        <Form className="w-50" onSubmit={props.handleSubmit}>
-            <Form.Group className="mb-3" controlId="order_no">
+        <div>
+            {/* <Form.Group className="mb-3" controlId="order_no">
                 <Row>
                     <Col>
                         <Form.Label className="d-flex align-self-left">Order Number</Form.Label>
@@ -22,7 +22,7 @@ function OrderForm(props) {
                     </Col>
                 </Row>
 
-            </Form.Group>
+            </Form.Group> */}
             <Form.Group className="mb-3" controlId="name">
                 <Row>
                     <Col xs={12} md={8}>
@@ -91,27 +91,13 @@ function OrderForm(props) {
             </Form.Group>
             <Form.Group className="mb-3" controlId="stock">
                 <Row>
-                    <Col >
+                    <Col xs={12} xs={6}>
                         <Form.Label className="d-flex align-self-left">Customer PO</Form.Label>
                         <Form.Control
                             type="text"
                             name="customer_po"
                             placeholder="Customer PO"
                             value={props.customer_po}
-                            onChange={e => props.handleChange(e)}
-                        />
-                    </Col>
-                </Row>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="quote">
-                <Row>
-                    <Col xs={12} md={6}>
-                        <Form.Label className="d-flex align-self-left">Quote Ref</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="quote_ref"
-                            placeholder="Town"
-                            value={props.quote_ref}
                             onChange={e => props.handleChange(e)}
                         />
                     </Col>
@@ -127,12 +113,28 @@ function OrderForm(props) {
                     </Col>
                 </Row>
             </Form.Group>
+            <Form.Group className="mb-3" controlId="quote">
+                <Row>
+                    {/* <Col xs={12} md={6}>
+                        <Form.Label className="d-flex align-self-left">Quote Ref</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="quote_ref"
+                            placeholder="Town"
+                            value={props.quote_ref}
+                            onChange={e => props.handleChange(e)}
+                        />
+                    </Col> */}
+
+                </Row>
+            </Form.Group>
             <Button
                 variant='danger'
                 className='m-2'
+                onClick={e => props.handleCancel(e)}
             >Cancel</Button>
             <Button variant='success' className='m-2' type="submit">Save</Button>
-        </Form>
+        </div>
     )
 }
 

@@ -13,7 +13,7 @@ class Welcome extends Component {
     render() {
         return (
             <Card className='m-4'>
-                <Card.Title className='mt-2'>Taynuilt Trees Database Management System</Card.Title>
+                <Card.Title className='m-2'>Taynuilt Trees Database Management System</Card.Title>
                 <Card.Body>
                     <Card.Text>Please select a table below to browse data</Card.Text>
                     <Button className="m-3" href="/orders">Orders</Button>

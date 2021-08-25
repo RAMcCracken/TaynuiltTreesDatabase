@@ -109,7 +109,7 @@ class CustomerEditor extends Component {
         return (
             <Card className='m-4' >
 
-                <Card.Title className='mt-4'>Edit Customer</Card.Title>
+                <Card.Title className='m-4'>Edit Customer</Card.Title>
                 {loading ? <h4>Loading, please wait</h4> :
                     <Card.Body className="d-flex flex-row justify-content-center">
                         <CustomerForm
