@@ -1,8 +1,8 @@
--- MariaDB dump 10.19  Distrib 10.6.3-MariaDB, for debian-linux-gnu (x86_64)
+-- MariaDB dump 10.19  Distrib 10.6.4-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: taynuilttrees
 -- ------------------------------------------------------
--- Server version	10.6.3-MariaDB-1:10.6.3+maria~focal
+-- Server version	10.6.4-MariaDB-1:10.6.4+maria~focal
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -58,8 +58,7 @@ CREATE TABLE `Customer_Phone` (
   `customer_ref` varchar(100) NOT NULL,
   PRIMARY KEY (`phone_number`,`customer_ref`),
   KEY `Customer_Phone_FK` (`customer_ref`),
-  CONSTRAINT `Customer_Phone_FK` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `Customer_Phone_CHECK` CHECK (`phone_number` regexp '^0\\d{10}$')
+  CONSTRAINT `Customer_Phone_FK` FOREIGN KEY (`customer_ref`) REFERENCES `Customer` (`customer_ref`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -69,7 +68,7 @@ CREATE TABLE `Customer_Phone` (
 
 LOCK TABLES `Customer_Phone` WRITE;
 /*!40000 ALTER TABLE `Customer_Phone` DISABLE KEYS */;
-INSERT INTO `Customer_Phone` VALUES ('01234567891','a4'),('01234567891','a5'),('01234567891','aaaaa'),('01234567891','affff5'),('01234567891','b1'),('01234567892','a4'),('01234567892','a5'),('01234567892','affff5'),('01234567892','b1');
+INSERT INTO `Customer_Phone` VALUES ('-3333','aaaaa'),('012345','b1'),('0134534','a4'),('0134534','a5'),('0134534','affff5'),('0756565','a4'),('0756565','a5'),('0756565','affff5'),('366997292','b1');
 /*!40000 ALTER TABLE `Customer_Phone` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -708,7 +707,7 @@ CREATE TABLE `Order_Products` (
 
 LOCK TABLES `Order_Products` WRITE;
 /*!40000 ALTER TABLE `Order_Products` DISABLE KEYS */;
-INSERT INTO `Order_Products` VALUES ('o4','p1',1,1),('o4','p2',1,100);
+INSERT INTO `Order_Products` VALUES ('o4','p2',1,2);
 /*!40000 ALTER TABLE `Order_Products` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -759,7 +758,7 @@ CREATE TABLE `Orders` (
   `location` varchar(100) DEFAULT NULL,
   `stock_reserve` tinyint(1) DEFAULT NULL,
   `customer_po` varchar(100) DEFAULT NULL,
-  `quote_ref` varchar(100) DEFAULT NULL,
+  `quote_ref` int(11) DEFAULT NULL,
   `customer_ref` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`order_no`),
   UNIQUE KEY `Orders_UN` (`quote_ref`),
@@ -778,7 +777,7 @@ CREATE TABLE `Orders` (
 
 LOCK TABLES `Orders` WRITE;
 /*!40000 ALTER TABLE `Orders` DISABLE KEYS */;
-INSERT INTO `Orders` VALUES ('o4','2000-01-01',1234,1,'122',1,'122','q1','a4'),('o6','2000-06-23',1234,1,'122',0,'122','q3','a4');
+INSERT INTO `Orders` VALUES ('o4','2000-01-01',1234,1,'122',1,'122',1,'a4'),('o6','2000-06-23',1234,1,'122',0,'122',2,'a4');
 /*!40000 ALTER TABLE `Orders` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -967,10 +966,10 @@ DROP TABLE IF EXISTS `Quote`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Quote` (
-  `quote_ref` varchar(100) NOT NULL,
+  `quote_ref` int(11) NOT NULL AUTO_INCREMENT,
   `quote_number` int(11) DEFAULT NULL,
   PRIMARY KEY (`quote_ref`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -979,8 +978,37 @@ CREATE TABLE `Quote` (
 
 LOCK TABLES `Quote` WRITE;
 /*!40000 ALTER TABLE `Quote` DISABLE KEYS */;
-INSERT INTO `Quote` VALUES ('q1',1),('q2',1),('q3',2),('q4',2);
+INSERT INTO `Quote` VALUES (1,NULL),(2,NULL);
 /*!40000 ALTER TABLE `Quote` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Quote_Products`
+--
+
+DROP TABLE IF EXISTS `Quote_Products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Quote_Products` (
+  `quote_ref` varchar(100) NOT NULL,
+  `product_code` varchar(100) NOT NULL,
+  `bags` int(11) DEFAULT NULL,
+  `quantity` bigint(20) NOT NULL,
+  PRIMARY KEY (`quote_ref`,`product_code`),
+  KEY `Order_Products_FK_2` (`product_code`) USING BTREE,
+  CONSTRAINT `Quote_Products_FK_1` FOREIGN KEY (`quote_ref`) REFERENCES `Quote` (`quote_ref`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `Quote_Products_FK_3` FOREIGN KEY (`product_code`) REFERENCES `Product` (`product_code`),
+  CONSTRAINT `Quote_Product_Check` CHECK (`quantity` > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Quote_Products`
+--
+
+LOCK TABLES `Quote_Products` WRITE;
+/*!40000 ALTER TABLE `Quote_Products` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Quote_Products` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1033,7 +1061,7 @@ CREATE TABLE `Supplier` (
 
 LOCK TABLES `Supplier` WRITE;
 /*!40000 ALTER TABLE `Supplier` DISABLE KEYS */;
-INSERT INTO `Supplier` VALUES ('3','tree seller','1','st','town','postcod','email');
+INSERT INTO `Supplier` VALUES ('3','tree seller','1','st','town','postcod','email'),('4','tree seller','1','st','town','postcod','email'),('5','tree seller','1','st','town','postcod','email');
 /*!40000 ALTER TABLE `Supplier` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1058,28 +1086,8 @@ CREATE TABLE `Supplier_Phone` (
 
 LOCK TABLES `Supplier_Phone` WRITE;
 /*!40000 ALTER TABLE `Supplier_Phone` DISABLE KEYS */;
+INSERT INTO `Supplier_Phone` VALUES ('3','123123'),('3','23443');
 /*!40000 ALTER TABLE `Supplier_Phone` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `banana`
---
-
-DROP TABLE IF EXISTS `banana`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `banana` (
-  `Column1` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `banana`
---
-
-LOCK TABLES `banana` WRITE;
-/*!40000 ALTER TABLE `banana` DISABLE KEYS */;
-/*!40000 ALTER TABLE `banana` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1189,4 +1197,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-25  9:41:42
+-- Dump completed on 2021-08-25 10:21:17
