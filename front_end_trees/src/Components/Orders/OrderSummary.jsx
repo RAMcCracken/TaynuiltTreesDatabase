@@ -19,6 +19,7 @@ class OrderSummary extends Component {
             order_products: [{ id: 1, product_code: "", quantity: "", bags: "" }],
             invoices: [],
             selectedInvoice: "",
+            toDelete: "",
             disabled: true,
             loading: true,
             error: null,
@@ -76,9 +77,20 @@ class OrderSummary extends Component {
         this.setState({ order_products: [...this.state.order_products, { id: id + 2, product_code: "", quantity: "", bags: "" }] })
     }
 
+    handleSubtract = (i) => {
+        console.log(i);
+        if (i === 0) {
+            this.setState({ order_products: [{ id: 1, product_code: "", quantity: "", bags: "" }] })
+        } else {
+            const values = [...this.state.order_products]
+            values.splice(i, 1)
+            this.setState({ order_products: [...values] })
+        }
 
-    handleDelete(id) {
-        let product = this.state.order_products.filter(product => product.id === id)[0]
+    }
+
+    handleDelete() {
+        let product = this.state.order_products.filter(product => product.id === this.state.toDelete)[0]
 
         const requestOptions = {
             method: 'DELETE',
@@ -90,8 +102,8 @@ class OrderSummary extends Component {
         fetch('/api/order/' + this.state.order_no + "/product/" + product.product_code, requestOptions)
             .then(response => {
                 if (response.ok) {
-                    const result = this.state.order_products.filter(product => product.id !== id);
-                    this.setState({ order_products: result })
+                    const result = this.state.order_products.filter(product => product.id !== this.state.toDelete);
+                    this.setState({ order_products: result, toDelete: "" })
                 }
             })
         this.handleCloseDelete();
@@ -132,6 +144,7 @@ class OrderSummary extends Component {
             .then(response => {
                 response.json();
                 if (response.ok) {
+                    window.location.reload(false);
                 }
             })
     }
@@ -172,14 +185,16 @@ class OrderSummary extends Component {
             .then(response => {
                 response.json();
                 if (response.ok) {
+                    window.location.reload(false);
                 }
             })
     }
 
     //opens delete modal
-    handleShowDelete(event) {
+    handleShowDelete = (event, id) => {
         event.preventDefault();
         this.setState({
+            toDelete: id,
             showDeleteConf: true
         });
     }
@@ -267,7 +282,7 @@ class OrderSummary extends Component {
                                     handleEditOrderProd={this.handleEditOrderProd.bind(this)}
                                     handleSubtract={this.handleSubtract}
                                     handleCancel={this.handleCancel.bind(this)}
-                                    handleDelete={this.handleDelete.bind(this)}
+                                    handleDelete={this.handleShowDelete}
                                 ></OrderProductEditor>
                             ))}
                             <Button className="mb-4" onClick={() => this.handleAdd(order_products.length)}><PlusCircle></PlusCircle></Button>

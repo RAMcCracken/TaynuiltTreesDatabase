@@ -27,6 +27,10 @@ function Navigation() {
                             <NavDropdown.Item href="/new-quote">New Quote</NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link href="/orders">Orders</Nav.Link>
+                        <NavDropdown title="Invoices" id="customer-dropdown">
+                            <NavDropdown.Item href="/invoices">Invoice Data</NavDropdown.Item>
+                            <NavDropdown.Item href="/new-invoice">New Invoice</NavDropdown.Item>
+                        </NavDropdown>
                         <NavDropdown title="Customers" id="customer-dropdown">
                             <NavDropdown.Item href="/customers">Customer Data</NavDropdown.Item>
                             <NavDropdown.Item href="/new-customer">New Customer</NavDropdown.Item>

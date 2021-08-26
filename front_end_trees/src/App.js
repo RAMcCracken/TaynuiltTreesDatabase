@@ -12,7 +12,11 @@ import OrderSummary from './Components/Orders/OrderSummary'
 import QuoteViewer from './Components/Quotes/QuoteViewer';
 import QuoteCreator from './Components/Quotes/QuoteCreator';
 import QuoteEditor from './Components/Quotes/QuoteEditor';
-import QuoteSummary from './Components/Quotes/QuoteSummary'
+import QuoteSummary from './Components/Quotes/QuoteSummary';
+import InvoiceViewer from './Components/Invoices/InvoiceViewer';
+import InvoiceCreator from './Components/Invoices/InvoiceCreator';
+import InvoiceEditor from './Components/Invoices/InvoiceEditor';
+import InvoiceSummary from './Components/Invoices/InvoiceSummary';
 
 function App() {
   return (
@@ -32,6 +36,10 @@ function App() {
             <Route path="/New-Quote" component={QuoteCreator} />
             <Route path="/Edit-Quote" component={QuoteEditor} />
             <Route path="/Quotes/:id" component={QuoteSummary} />
+            <Route exact path="/Invoices" component={InvoiceViewer} />
+            <Route path="/New-Invoice" component={InvoiceCreator} />
+            <Route path="/Edit-Invoice" component={InvoiceEditor} />
+            <Route path="Invoices/:id" component={InvoiceSummary} />
           </Switch>
         </div>
 

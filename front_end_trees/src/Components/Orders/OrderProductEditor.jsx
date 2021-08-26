@@ -86,6 +86,7 @@ class OrderProductEditor extends Component {
                             <Col xs={1} className="mt-4 d-flex flex-col align-self-end">
                                 <Button
                                     variant="danger"
+                                    disabled={this.props.i === 0}
                                     onClick={this.handleCancel.bind(this)}>
                                     <XCircle></XCircle></Button>
                             </Col>}
