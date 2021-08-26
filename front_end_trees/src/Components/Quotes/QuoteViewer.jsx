@@ -191,7 +191,7 @@ class QuoteViewer extends Component {
                                                 </td>
                                                 <td>{quote.quote_ref}</td>
                                                 <td>{quote.quote_number}</td>
-                                                <td>{util.formatDate(quote.order_date)}</td>
+                                                <td>{quote.order_date ? util.formatDate(quote.order_date) : ""}</td>
                                                 <td>{quote.credit_period}</td>
                                                 <td>{quote.picked}</td>
                                                 <td>{quote.location}</td>

@@ -35,6 +35,7 @@ class QuoteCreator extends Component {
     };
 
     handleDateChange = e => {
+        console.log(util.formatDate(e));
         this.setState({
             order_date: e
         })
@@ -63,7 +64,7 @@ class QuoteCreator extends Component {
             },
             body: {
                 quote_number: this.state.quote_number,
-                order_date: util.formatDate(this.state.order_date),
+                order_date: this.state.order_date ? util.formatDate(this.state.order_date) : util.formatDate(new Date()),
                 credit_period: this.state.credit_period,
                 picked: this.state.picked,
                 location: this.state.location,

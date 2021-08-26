@@ -153,7 +153,7 @@ class OrdersViewer extends Component {
                                                     />
                                                 </td>
                                                 <td>{order.order_no}</td>
-                                                <td>{util.formatDate(order.order_date)}</td>
+                                                <td>{order.order_date ? util.formatDate(order.order_date) : ""}</td>
                                                 <td>{order.credit_period}</td>
                                                 <td>{order.picked}</td>
                                                 <td>{order.location}</td>

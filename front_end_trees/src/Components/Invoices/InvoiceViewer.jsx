@@ -5,6 +5,7 @@ import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import { Link } from 'react-router-dom'
 import DeleteConfirmation from '../DeleteConfirmation'
+const util = require("../../Utils")
 
 class InvoiceViewer extends Component {
     constructor(props) {
@@ -155,12 +156,12 @@ class InvoiceViewer extends Component {
                                                     />
                                                 </td>
                                                 <td>{invoice.invoice_no}</td>
-                                                <td>{invoice.invoice_date}</td>
+                                                <td>{invoice.invoice_date ? util.formatDate(invoice.invoice_date) : ""}</td>
                                                 <td>{invoice.discount}</td>
                                                 <td>{invoice.vat}</td>
                                                 <td>{invoice.payment_method}</td>
                                                 <td>{invoice.paid}</td>
-                                                <td>{invoice.date_paid}</td>
+                                                <td>{invoice.date_paid ? util.formatDate(invoice.date_paid) : ""}</td>
                                                 <td>{invoice.delivery_ref}</td>
                                             </tr>
                                         )

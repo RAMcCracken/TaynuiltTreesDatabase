@@ -8,32 +8,10 @@ import DatePicker from 'react-date-picker'
 function OrderForm(props) {
     return (
         <div>
-            {/* <Form.Group className="mb-3" controlId="order_no">
-                <Row>
-                    <Col>
-                        <Form.Label className="d-flex align-self-left">Order Number</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="e.g C123"
-                            value={props.order_no}
-                            name="order_no"
-                            onChange={e => props.handleChange(e)}
-                        />
-                    </Col>
-                </Row>
-
-            </Form.Group> */}
             <Form.Group className="mb-3" controlId="name">
                 <Row>
                     <Col xs={12} md={8}>
                         <Form.Label className="d-flex align-self-left">Date</Form.Label>
-                        {/* <Form.Control
-                            type="text"
-                            placeholder="Order Date"
-                            name="order_date"
-                            value={props.order_date}
-                            onChange={e => props.handleChange(e)}
-                        /> */}
                         <DatePicker
                             name="order_date"
                             value={props.order_date}
@@ -111,21 +89,6 @@ function OrderForm(props) {
                             onChange={e => props.handleChange(e)}
                         />
                     </Col>
-                </Row>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="quote">
-                <Row>
-                    {/* <Col xs={12} md={6}>
-                        <Form.Label className="d-flex align-self-left">Quote Ref</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="quote_ref"
-                            placeholder="Town"
-                            value={props.quote_ref}
-                            onChange={e => props.handleChange(e)}
-                        />
-                    </Col> */}
-
                 </Row>
             </Form.Group>
             <Button
