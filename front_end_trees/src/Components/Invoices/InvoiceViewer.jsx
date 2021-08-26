@@ -95,14 +95,16 @@ class InvoiceViewer extends Component {
                 {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
                     <Card.Body>
-                        <Link to={
-                            {
-                                pathname: "/edit-invoice",
-                                state: {
-                                    data: this.state.data ? this.state.data.filter(row => row.invoice_no == this.state.selectedInvoice)[0] : ""
+                        <Link
+                            onClick={e => this.state.selectedInvoice === "" && e.preventDefault()}
+                            to={
+                                {
+                                    pathname: "/edit-invoice",
+                                    state: {
+                                        data: this.state.data ? this.state.data.filter(row => row.invoice_no == this.state.selectedInvoice)[0] : ""
+                                    }
                                 }
-                            }
-                        }>
+                            }>
                             <Button
                                 disabled={this.state.selectedInvoice === ""}
                                 className='m-2'>
