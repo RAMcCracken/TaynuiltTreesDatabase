@@ -7,6 +7,7 @@ import Table from 'react-bootstrap/Table'
 import { withRouter } from 'react-router'
 import OrderProductEditor from './OrderProductEditor'
 import DeleteConfirmation from '../DeleteConfirmation'
+import { Link } from "react-router-dom"
 const util = require("../../Utils")
 
 class OrderSummary extends Component {
@@ -287,6 +288,41 @@ class OrderSummary extends Component {
                             ))}
                             <Button className="mb-4" onClick={() => this.handleAdd(order_products.length)}><PlusCircle></PlusCircle></Button>
                             <Card.Subtitle className="mt-4">Invoices</Card.Subtitle>
+                            <Link
+                                onClick={e => this.state.selectedInvoice === "" && e.preventDefault()}
+                                to={
+                                    {
+                                        pathname: "/edit-invoice",
+                                        state: {
+                                            data: invoices ? invoices.filter(row => row.invoice_no == this.state.selectedInvoice)[0] : ""
+                                        }
+                                    }
+                                }>
+                                <Button
+                                    disabled={this.state.selectedInvoice === ""}
+                                    className='m-2'>
+                                    Edit
+                        </Button>
+                            </Link>
+                            <Button
+                                disabled={this.state.selectedInvoice === ""}
+                                variant='danger'
+                                className='m-2'
+                                onClick={this.handleShowDelete.bind(this)}>
+                                Delete
+                        </Button>
+                            <Button
+                                variant='secondary'
+                                className='m-2'
+                                disabled={this.state.selectedInvoice === ""}
+                                href={"/invoices/" + this.state.selectedInvoice}>
+                                View Invoice Details</Button>
+                            <Button
+                                variant="success"
+                                className="m-2"
+                                href="/new-invoice">
+                                New Invoice
+                            </Button>
                             <Table bordered striped className='mt-2'>
                                 <thead>
                                     <th>Selected</th>
@@ -314,12 +350,12 @@ class OrderSummary extends Component {
                                                     />
                                                 </td>
                                                 <td>{invoice.invoice_no}</td>
-                                                <td>{invoice.invoice_date}</td>
+                                                <td>{invoice.invoice_date ? util.formatDate(invoice.invoice_date) : ""}</td>
                                                 <td>{invoice.discount}</td>
                                                 <td>{invoice.vat}</td>
                                                 <td>{invoice.payment_method}</td>
                                                 <td>{invoice.paid}</td>
-                                                <td>{invoice.date_paid}</td>
+                                                <td>{invoice.date_paid ? util.formatDate(invoice.date_paid) : ""}</td>
                                                 <td>{invoice.delivery_ref}</td>
                                             </tr>
                                         )

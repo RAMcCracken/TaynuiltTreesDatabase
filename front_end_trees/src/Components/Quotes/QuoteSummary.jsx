@@ -16,8 +16,6 @@ class QuoteSummary extends Component {
             quote_ref: this.props.match.params.id,
             quote_details: null,
             quote_products: [{ id: 1, product_code: "", quantity: "", bags: "" }],
-            invoices: [],
-            selectedInvoice: "",
             disabled: true,
             toDelete: "",
             loading: true,
@@ -262,7 +260,7 @@ class QuoteSummary extends Component {
                                 </Row>
                             </Container>
 
-                            <Card.Subtitle className="mt-4">Order Products</Card.Subtitle>
+                            <Card.Subtitle className="mt-4">Quote Products</Card.Subtitle>
                             {quote_products.map((product, i) => (
                                 <OrderProductEditor
                                     id={product.id}

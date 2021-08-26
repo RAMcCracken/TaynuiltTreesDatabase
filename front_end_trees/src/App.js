@@ -39,7 +39,7 @@ function App() {
             <Route exact path="/Invoices" component={InvoiceViewer} />
             <Route path="/New-Invoice" component={InvoiceCreator} />
             <Route path="/Edit-Invoice" component={InvoiceEditor} />
-            <Route path="Invoices/:id" component={InvoiceSummary} />
+            <Route path="/Invoices/:id" component={InvoiceSummary} />
           </Switch>
         </div>
 
