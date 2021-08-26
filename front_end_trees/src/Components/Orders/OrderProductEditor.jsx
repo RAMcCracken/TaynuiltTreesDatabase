@@ -30,7 +30,7 @@ class OrderProductEditor extends Component {
         if (!this.state.old_product_code && !this.state.old_quantity && !this.state.old_bags) {
             this.props.handleSubtract(this.props.i)
         } else {
-            this.props.handleDelete(this.props.id);
+            this.props.handleDelete(e, this.props.id);
         }
     }
 

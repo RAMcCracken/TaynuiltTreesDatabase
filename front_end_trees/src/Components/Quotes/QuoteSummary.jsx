@@ -19,6 +19,7 @@ class QuoteSummary extends Component {
             invoices: [],
             selectedInvoice: "",
             disabled: true,
+            toDelete: "",
             loading: true,
             error: null,
             showDeleteConf: false
@@ -65,13 +66,19 @@ class QuoteSummary extends Component {
         this.setState({ quote_products: values });
     }
 
+    handleSubtract = (i) => {
+        const values = [...this.state.quote_products]
+        values.splice(i, 1)
+        this.setState({ quote_products: [...values] })
+    }
+
     handleAdd = (id) => {
         this.setState({ quote_products: [...this.state.quote_products, { id: id + 2, product_code: "", quantity: "", bags: "" }] })
     }
 
 
-    handleDelete(id) {
-        let product = this.state.quote_products.filter(product => product.id === id)[0]
+    handleDelete() {
+        let product = this.state.quote_products.filter(product => product.id === this.state.toDelete)[0]
 
         const requestOptions = {
             method: 'DELETE',
@@ -83,8 +90,8 @@ class QuoteSummary extends Component {
         fetch('/api/quote/' + this.state.quote_ref + "/product/" + product.product_code, requestOptions)
             .then(response => {
                 if (response.ok) {
-                    const result = this.state.quote_products.filter(product => product.id !== id);
-                    this.setState({ quote_products: result })
+                    const result = this.state.quote_products.filter(product => product.id !== this.state.toDelete);
+                    this.setState({ quote_products: result, toDelete: "" })
                 }
             })
         this.handleCloseDelete();
@@ -125,6 +132,7 @@ class QuoteSummary extends Component {
             .then(response => {
                 response.json();
                 if (response.ok) {
+                    window.location.reload(false);
                 }
             })
     }
@@ -165,14 +173,16 @@ class QuoteSummary extends Component {
             .then(response => {
                 response.json();
                 if (response.ok) {
+                    window.location.reload(false);
                 }
             })
     }
 
     //opens delete modal
-    handleShowDelete(event) {
+    handleShowDelete = (event, id) => {
         event.preventDefault();
         this.setState({
+            toDelete: id,
             showDeleteConf: true
         });
     }
@@ -260,12 +270,20 @@ class QuoteSummary extends Component {
                                     handleEditOrderProd={this.handleEditOrderProd.bind(this)}
                                     handleSubtract={this.handleSubtract}
                                     handleCancel={this.handleCancel.bind(this)}
-                                    handleDelete={this.handleDelete.bind(this)}
+                                    handleDelete={this.handleShowDelete}
                                 ></OrderProductEditor>
                             ))}
                             <Button className="mb-4" onClick={() => this.handleAdd(quote_products.length)}><PlusCircle></PlusCircle></Button>
                         </div>
                     }
+                    <DeleteConfirmation
+                        handleClose={this.handleCloseDelete.bind(this)}
+                        handleShow={this.handleShowDelete.bind(this)}
+                        handleDelete={this.handleDelete.bind(this)}
+                        showDelete={this.state.showDeleteConf}
+                        table="product"
+                        selectedRef={this.state.toDelete}
+                    ></DeleteConfirmation>
                 </Card.Body>
             </Card>
         )
