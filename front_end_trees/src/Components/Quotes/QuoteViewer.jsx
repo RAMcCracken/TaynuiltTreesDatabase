@@ -107,12 +107,17 @@ class QuoteViewer extends Component {
             })
             .then(data => {
                 let res = this.state.data.map(row => {
-                    if (row.quote_ref == this.state.selectedQuote) {
+                    if (row.quote_ref === this.state.selectedQuote) {
                         row.quote_confirmed = 1;
                     }
+                    return row
                 })
+
+
+                console.log(res);
+
                 this.setState({ data: res })
-                alert("Quote, " + this.state.quote_ref + " successfully confirmed as order" + data.order_no)
+                alert("Quote, " + this.state.selectedQuote + " successfully confirmed as order " + data.order_no)
 
             })
             .catch(error => {
