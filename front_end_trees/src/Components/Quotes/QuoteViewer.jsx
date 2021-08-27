@@ -99,17 +99,21 @@ class QuoteViewer extends Component {
         fetch('/api/quote/' + this.state.selectedQuote + '/confirm', requestOptions)
             .then(response => {
                 if (response.ok) {
-                    let res = this.state.data.map(row => {
-                        if (row.quote_ref == this.state.selectedQuote) {
-                            row.quote_confirmed = 1;
-                        }
-                    })
-                    this.setState({ data: res })
-                    alert("Quote, " + this.state.quote_ref + " successfully confirmed as an order")
+                    return response.json()
                 } else {
                     let err = "Problem occurred confirming quote"
                     throw new Error(err);
                 }
+            })
+            .then(data => {
+                let res = this.state.data.map(row => {
+                    if (row.quote_ref == this.state.selectedQuote) {
+                        row.quote_confirmed = 1;
+                    }
+                })
+                this.setState({ data: res })
+                alert("Quote, " + this.state.quote_ref + " successfully confirmed as order" + data.order_no)
+
             })
             .catch(error => {
                 this.setState({ error: error.message })

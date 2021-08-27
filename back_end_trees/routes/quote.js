@@ -230,7 +230,7 @@ router.post('/:quote_ref/confirm', function (req, res) {
   let db_pool = req.app.get('db_pool');
   let e_msg = `Err: POST /api/quote/${req.params.quote_ref}/confirm -`;
   let b = req.body;
-  let order_ref = `o${req.params.quote_ref}`;
+  let order_no = `o${req.params.quote_ref}`;
 
   // INSERT ORDER
   // INSERT Order products from quote products
@@ -239,17 +239,17 @@ router.post('/:quote_ref/confirm', function (req, res) {
   db_pool.getConnection().then(conn => {
     conn.beginTransaction().then(() => {
       conn.query(`INSERT INTO Orders VALUES(?,?,?,?,?,?,?,?,?)`,
-        [order_ref, b.order_date, b.credit_period, b.picked, b.location, b.stock_reserve, b.customer_po, req.params.quote_ref, b.customer_ref]).then(() => {
+        [order_no, b.order_date, b.credit_period, b.picked, b.location, b.stock_reserve, b.customer_po, req.params.quote_ref, b.customer_ref]).then(() => {
           conn.query(`
-            INSERT INTO Order_Products (order_ref, product_code, bags, quantity)
+            INSERT INTO Order_Products (order_no, product_code, bags, quantity)
             SELECT ?, product_code, bags, quantity
             FROM Quote_Products WHERE quote_ref = ?
-            `, [order_ref, req.params.quote_ref]).then(() => {
+            `, [order_no, req.params.quote_ref]).then(() => {
             conn.query(`
                 UPDATE Quote SET quote_confirmed=1 WHERE quote_ref = ?
                 `, [req.params.quote_ref]).then(() => {
               conn.commit();
-              b.order_ref=order_ref;
+              b.order_no = order_no;
               res.send(b);
             }).catch(err => {
               util.handle_sql_error('updating quote confirmation', e_msg, 500, err, res, conn);
