@@ -5,6 +5,7 @@ import Card from 'react-bootstrap/Card'
 import Table from 'react-bootstrap/Table'
 import { Link } from 'react-router-dom'
 import DeleteConfirmation from '../DeleteConfirmation'
+import { Alert } from 'react-bootstrap'
 const util = require('../../Utils')
 
 class QuoteViewer extends Component {
@@ -62,8 +63,15 @@ class QuoteViewer extends Component {
                 if (response.ok) {
                     const result = this.state.data.filter(row => row.quote_ref != this.state.selectedQuote);
 
-                    this.setState({ data: result, selectedQuote: "" })
+                    this.setState({ data: result, selectedQuote: "", error: null })
+                } else {
+                    let err = "Problem occurred deleting this quote"
+                    throw new Error(err);
                 }
+            })
+            .catch(error => {
+                this.setState({ error: error.message })
+
             })
         this.handleCloseDelete();
     }
@@ -91,7 +99,20 @@ class QuoteViewer extends Component {
         fetch('/api/quote/' + this.state.selectedQuote + '/confirm', requestOptions)
             .then(response => {
                 if (response.ok) {
+                    let res = this.state.data.map(row => {
+                        if (row.quote_ref == this.state.selectedQuote) {
+                            row.quote_confirmed = 1;
+                        }
+                    })
+                    this.setState({ data: res })
+                    alert("Quote, " + this.state.quote_ref + " successfully confirmed as an order")
+                } else {
+                    let err = "Problem occurred confirming quote"
+                    throw new Error(err);
                 }
+            })
+            .catch(error => {
+                this.setState({ error: error.message })
             })
     }
 
@@ -114,7 +135,7 @@ class QuoteViewer extends Component {
         return (
             <Card className='m-4'>
                 <Card.Title className='m-4'>Quotes</Card.Title>
-                {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
+                {this.state.error ? <h5 className="text-danger m-4">{this.state.error}</h5> : <div />}
                 {this.state.loading ? <h4>Loading data, please wait</h4> :
                     <Card.Body>
                         <Link to={

@@ -65,8 +65,8 @@ class QuoteSummary extends Component {
     }
 
     handleSubtract = (i) => {
-        if (i === 1) {
-            this.setState({ quote_products: [{ id: 1, product_code: "", quantity: "", bags: "" }] })
+        if (i === 0) {
+            this.setState({ quote_products: [] })
         } else {
             const values = [...this.state.quote_products]
             values.splice(i, 1)

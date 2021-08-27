@@ -81,7 +81,7 @@ class OrderSummary extends Component {
     handleSubtract = (i) => {
         console.log(i);
         if (i === 0) {
-            this.setState({ order_products: [{ id: 1, product_code: "", quantity: "", bags: "" }] })
+            this.setState({ quote_products: [] })
         } else {
             const values = [...this.state.order_products]
             values.splice(i, 1)
