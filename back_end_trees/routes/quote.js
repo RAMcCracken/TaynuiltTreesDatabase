@@ -249,7 +249,8 @@ router.post('/:quote_ref/confirm', function (req, res) {
                 UPDATE Quote SET quote_confirmed=1 WHERE quote_ref = ?
                 `, [req.params.quote_ref]).then(() => {
               conn.commit();
-              res.send("");
+              b.order_ref=order_ref;
+              res.send(b);
             }).catch(err => {
               util.handle_sql_error('updating quote confirmation', e_msg, 500, err, res, conn);
             })
