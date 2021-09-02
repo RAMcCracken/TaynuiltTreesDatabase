@@ -10,15 +10,18 @@ class QuoteEditor extends Component {
         super(props)
         const data = this.props.location && this.props.location.state ?
             this.props.location.state.data : null
-        let date
+        let od_date = ""
         if (data) {
-            date = new Date(Date.parse(data.order_date))
+            if (data.order_date) {
+                od_date = new Date(Date.parse(data.order_date))
+            }
+
         }
 
         this.state = {
             quote_ref: data ? data.quote_ref : "",
             quote_number: data ? data.quote_number : "",
-            order_date: data ? date : "",
+            order_date: data ? od_date : "",
             credit_period: data ? data.credit_period : 0,
             picked: data ? data.picked : false,
             location: data ? data.location : "",
@@ -99,7 +102,7 @@ class QuoteEditor extends Component {
         const { quote_number, order_date, credit_period, picked, location, stock_reserve, customer_po, customer_ref } = this.state
         return (
             <Card className='m-4' >
-                <Card.Title className='m-4'>Edit Order</Card.Title>
+                <Card.Title className='m-4'>Edit Quote</Card.Title>
                 {this.state.error ? <h5 className="text-danger">{this.state.error}</h5> : <div />}
                 <Card.Body className="d-flex flex-row justify-content-center">
                     <Form className="w-50" onSubmit={this.handleSubmit}>

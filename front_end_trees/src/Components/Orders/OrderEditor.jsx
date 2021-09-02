@@ -7,16 +7,19 @@ const util = require("../../Utils")
 class OrderCreator extends Component {
     constructor(props) {
         super(props)
+
         const data = this.props.location && this.props.location.state ?
             this.props.location.state.data : null
-        let date
+        let od_date = ""
         if (data) {
-            date = new Date(Date.parse(data.order_date))
+            if (data.order_date) {
+                od_date = new Date(Date.parse(data.order_date))
+            }
         }
 
         this.state = {
             order_no: data ? data.order_no : "",
-            order_date: data ? date : "",
+            order_date: data ? od_date : "",
             credit_period: data ? data.credit_period : 0,
             picked: data ? data.picked : false,
             location: data ? data.location : "",

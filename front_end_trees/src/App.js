@@ -17,6 +17,9 @@ import InvoiceViewer from './Components/Invoices/InvoiceViewer';
 import InvoiceCreator from './Components/Invoices/InvoiceCreator';
 import InvoiceEditor from './Components/Invoices/InvoiceEditor';
 import InvoiceSummary from './Components/Invoices/InvoiceSummary';
+import DeliveryViewer from './Components/Deliveries/DeliveryViewer';
+import DeliveryCreator from './Components/Deliveries/DeliveryCreator';
+import DeliveryEditor from './Components/Deliveries/DeliveryEditor';
 
 function App() {
   return (
@@ -40,6 +43,9 @@ function App() {
             <Route path="/New-Invoice" component={InvoiceCreator} />
             <Route path="/Edit-Invoice" component={InvoiceEditor} />
             <Route path="/Invoices/:id" component={InvoiceSummary} />
+            <Route exact path="/Deliveries" component={DeliveryViewer} />
+            <Route path="/New-Delivery" component={DeliveryCreator} />
+            <Route path="/Edit-Delivery" component={DeliveryEditor} />
           </Switch>
         </div>
 

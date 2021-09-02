@@ -107,7 +107,7 @@ class QuoteViewer extends Component {
             })
             .then(data => {
                 let res = this.state.data.map(row => {
-                    if (row.quote_ref === this.state.selectedQuote) {
+                    if (row.quote_ref == this.state.selectedQuote) {
                         row.quote_confirmed = 1;
                     }
                     return row
@@ -117,7 +117,7 @@ class QuoteViewer extends Component {
                 console.log(res);
 
                 this.setState({ data: res })
-                alert("Quote, " + this.state.selectedQuote + " successfully confirmed as order " + data.order_no)
+                alert("Quote " + this.state.selectedQuote + " successfully confirmed as order " + data.order_no)
 
             })
             .catch(error => {
@@ -156,7 +156,7 @@ class QuoteViewer extends Component {
                             }
                         }>
                             <Button
-                                disabled={this.state.selectedQuote === ""}
+                                disabled={this.state.selectedQuote === "" || this.state.data.filter(row => row.quote_ref == this.state.selectedQuote)[0].quote_confirmed}
                                 className='m-2'
                                 onClick={this.handleEdit}>
                                 Edit
