@@ -139,6 +139,7 @@ function CustomerForm(props) {
             <Button
                 variant='danger'
                 className='m-2'
+                onClick={e => props.handleCancel(e)}
             >Cancel</Button>
             <Button variant='success' className='m-2' type="submit">Save</Button>
         </Form>

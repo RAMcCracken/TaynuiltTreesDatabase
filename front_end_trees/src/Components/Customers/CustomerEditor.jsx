@@ -64,6 +64,10 @@ class CustomerEditor extends Component {
         this.setState({ phoneFields: [...values] })
     }
 
+    handleCancel() {
+        this.props.history.push("/customers");
+    }
+
     handleSubmit = (e) => {
         e.preventDefault();
 
@@ -128,6 +132,7 @@ class CustomerEditor extends Component {
                             handleChangePhone={this.handleChangePhone.bind(this)}
                             handleAdd={this.handleAdd.bind(this)}
                             handleSubtract={this.handleSubtract.bind(this)}
+                            handleCancel={this.handleCancel.bind(this)}
                         ></CustomerForm>
                     </Card.Body>
                 }

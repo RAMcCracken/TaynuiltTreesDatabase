@@ -122,6 +122,12 @@ class DeliveryViewer extends Component {
                             disabled={this.state.selectedDeliveryRef === ""}
                             href={"/deliveries/" + this.state.selectedDeliveryRef}>
                             View Delivery Details</Button>
+                        <Button
+                            variant="success"
+                            className="m-2"
+                            href="/new-delivery">
+                            New Delivery
+                            </Button>
                         <Form>
                             <Table bordered striped className='mt-2'>
                                 <thead>
