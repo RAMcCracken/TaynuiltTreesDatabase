@@ -117,12 +117,6 @@ class DeliveryViewer extends Component {
                             Delete
                         </Button>
                         <Button
-                            variant='secondary'
-                            className='m-2'
-                            disabled={this.state.selectedDeliveryRef === ""}
-                            href={"/deliveries/" + this.state.selectedDeliveryRef}>
-                            View Delivery Details</Button>
-                        <Button
                             variant="success"
                             className="m-2"
                             href="/new-delivery">

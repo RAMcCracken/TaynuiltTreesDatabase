@@ -19,9 +19,10 @@ class Welcome extends Component {
                         <Card.Text>Please select a table below to browse data</Card.Text>
                         <Button className="m-3" href="/quotes">Quotes</Button>
                         <Button className="m-3" href="/orders">Orders</Button>
+                        <Button className="m-3" href="/invoices">Invoices</Button>
+                        <Button className="m-3" href="/deliveries">Deliveries</Button>
                         <Button className="m-3" href="/customers">Customers</Button>
                     </Card.Body>
-
                 </Card>
             </Container>
 
