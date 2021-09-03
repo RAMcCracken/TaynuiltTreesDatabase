@@ -3,8 +3,7 @@ import { Card, Row, Col, Container } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form'
 import { ArrowLeft, DashCircle, PlusCircle } from 'react-bootstrap-icons'
 import Button from 'react-bootstrap/Button'
-import { withRouter } from 'react-router'
-import OrderProductEditor from '../Orders/OrderProductEditor'
+import QuoteProductEditor from './QuoteProductEditor'
 import DeleteConfirmation from '../DeleteConfirmation'
 const util = require("../../Utils")
 
@@ -262,11 +261,10 @@ class QuoteSummary extends Component {
 
                             <Card.Subtitle className="mt-4">Quote Products</Card.Subtitle>
                             {quote_products.map((product, i) => (
-                                <OrderProductEditor
+                                <QuoteProductEditor
                                     id={product.id}
                                     product_code={product.product_code}
                                     quantity={product.quantity}
-                                    bags={product.bags}
                                     i={i}
                                     handleChangeProduct={this.handleChangeProduct}
                                     handleSubmitOrderProd={this.handleSubmitOrderProd.bind(this)}
@@ -274,7 +272,7 @@ class QuoteSummary extends Component {
                                     handleSubtract={this.handleSubtract}
                                     handleCancel={this.handleCancel.bind(this)}
                                     handleDelete={this.handleShowDelete}
-                                ></OrderProductEditor>
+                                ></QuoteProductEditor>
                             ))}
                             <Button className="mb-4" onClick={() => this.handleAdd(quote_products.length)}><PlusCircle></PlusCircle></Button>
                         </div>

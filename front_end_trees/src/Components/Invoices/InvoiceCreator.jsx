@@ -11,8 +11,8 @@ class InvoiceCreator extends Component {
         this.state = {
             invoice_no: "",
             invoice_date: "",
-            discount: null,
-            vat: null,
+            discount: 0,
+            vat: 20,
             payment_method: "",
             paid: false,
             date_paid: "",

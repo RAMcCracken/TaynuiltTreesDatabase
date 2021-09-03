@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import { Row, Col } from 'react-bootstrap'
-import OrderForm from '../Orders/OrderForm'
+import Button from 'react-bootstrap/Button'
+import DatePicker from 'react-date-picker'
 const util = require("../../Utils")
 
 class QuoteCreator extends Component {
@@ -11,7 +12,7 @@ class QuoteCreator extends Component {
 
         this.state = {
             quote_ref: "",
-            quote_number: "",
+            notes: "",
             order_date: "",
             credit_period: null,
             picked: false,
@@ -34,10 +35,10 @@ class QuoteCreator extends Component {
         });
     };
 
-    handleDateChange = e => {
-        console.log(util.formatDate(e));
+    handleDateChange = date => {
+        console.log(util.formatDate(date));
         this.setState({
-            order_date: e
+            order_date: date
         })
     }
 
@@ -63,7 +64,7 @@ class QuoteCreator extends Component {
                 'Content-Type': 'application/json',
             },
             body: {
-                quote_number: this.state.quote_number,
+                notes: this.state.notes,
                 order_date: this.state.order_date ? util.formatDate(this.state.order_date) : util.formatDate(new Date()),
                 credit_period: this.state.credit_period,
                 picked: this.state.picked,
@@ -96,7 +97,7 @@ class QuoteCreator extends Component {
 
 
     render() {
-        const { quote_number, quote_confirmed, order_date, credit_period, picked, location, stock_reserve, customer_po, quote_ref, customer_ref } = this.state
+        const { notes, quote_confirmed, order_date, credit_period, picked, location, stock_reserve, customer_po, quote_ref, customer_ref } = this.state
 
         return (
             <Card className='m-4' >
@@ -105,32 +106,65 @@ class QuoteCreator extends Component {
                 <Card.Body className="d-flex flex-row justify-content-center">
                     <Form className="w-50" onSubmit={this.handleSubmit}>
                         <Row>
-                            <Col xs={12} xs={6}>
-                                <Form.Label className="d-flex align-self-left">Quote Number</Form.Label>
+                            <Col xs={12} md={8}>
+                                <Form.Label className="d-flex align-self-left">Date</Form.Label>
+                                <DatePicker
+                                    name="order_date"
+                                    value={this.order_date}
+                                    onChange={date => this.handleDateChange(date)}
+                                ></DatePicker>
+                            </Col>
+                            <Col xs={12} md={4}>
+                                <Form.Label className="d-flex align-self-left">Credit Period</Form.Label>
                                 <Form.Control
-                                    type="text"
-                                    name="quote_number"
-                                    placeholder="Quote Number"
-                                    value={quote_number}
+                                    type="number"
+                                    name="credit_period"
+                                    placeholder="Credit Period"
+                                    value={this.credit_period}
                                     onChange={e => this.handleChange(e)}
                                 />
                             </Col>
                         </Row>
-                        <OrderForm
-                            order_date={order_date}
-                            credit_period={credit_period}
-                            picked={picked}
-                            location={location}
-                            stock_reserve={stock_reserve}
-                            customer_po={customer_po}
-                            quote_ref={quote_ref}
-                            customer_ref={customer_ref}
-                            handleChange={this.handleChange.bind(this)}
-                            handleDateChange={this.handleDateChange.bind(this)}
-                            handleSubmit={this.handleSubmit.bind(this)}
-                            handleOptionChange={this.handleOptionChange.bind(this)}
-                            handleCancel={this.handleCancel.bind(this)}
-                        ></OrderForm>
+                        <Row>
+                            <Col xs={12} xs={6}>
+                                <Form.Label className="d-flex align-self-left">Customer PO</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="customer_po"
+                                    placeholder="Customer PO"
+                                    value={this.customer_po}
+                                    onChange={e => this.handleChange(e)}
+                                />
+                            </Col>
+                            <Col xs={12} md={6}>
+                                <Form.Label className="d-flex align-self-left">Customer Ref</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="customer_ref"
+                                    placeholder="Customer Ref"
+                                    value={this.customer_ref}
+                                    onChange={e => this.handleChange(e)}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Form.Label className="d-flex align-self-left">Notes</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="notes"
+                                    placeholder="Notes"
+                                    value={this.notes}
+                                    onChange={e => this.handleChange(e)}
+                                />
+                            </Col>
+                        </Row>
+                        <Button
+                            variant='danger'
+                            className='m-2'
+                            onClick={e => this.handleCancel(e)}
+                        >Cancel</Button>
+                        <Button variant='success' className='m-2' type="submit">Save</Button>
 
                     </Form>
                 </Card.Body>
